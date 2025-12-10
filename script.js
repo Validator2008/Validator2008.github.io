@@ -21,11 +21,11 @@ document.addEventListener('DOMContentLoaded', function() {
         if (isDark) {
             body.classList.add('dark-theme');
             if (themeToggleIcon) themeToggleIcon.textContent = '☀️';
-        //    if (themeToggleLabel) themeToggleLabel.textContent = 'Light';
+            if (themeToggleLabel) themeToggleLabel.textContent = 'Light';
         } else {
             body.classList.remove('dark-theme');
             if (themeToggleIcon) themeToggleIcon.textContent = '🌙';
-         //   if (themeToggleLabel) themeToggleLabel.textContent = 'Dark';
+            if (themeToggleLabel) themeToggleLabel.textContent = 'Dark';
         }
     }
 
