@@ -287,6 +287,21 @@ body.dark-theme .theme-toggle {
     color: var(--text-secondary);
 }
 
+.about-photo-wrapper {
+    width: 280px;
+    height: 280px;
+    margin: 0 auto 2rem;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.about-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .tech-stack {
     margin-top: 3rem;
 }
