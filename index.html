@@ -206,6 +206,32 @@
       font-weight: 600;
       color: var(--text);
     }
+    .profile-photo-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .profile-photo {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      object-position: center top;
+      border: 2.5px solid transparent;
+      background-clip: padding-box;
+      box-shadow:
+        0 0 0 2.5px var(--accent),
+        0 0 28px rgba(16, 217, 161, 0.35),
+        0 8px 30px rgba(0, 0, 0, 0.5);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    .profile-photo:hover {
+      transform: scale(1.03);
+      box-shadow:
+        0 0 0 2.5px var(--accent-2),
+        0 0 40px rgba(124, 244, 255, 0.45),
+        0 10px 40px rgba(0, 0, 0, 0.55);
+    }
     .footer {
       margin-top: 70px;
       padding: 24px 0 0;
@@ -271,6 +297,9 @@
         </div>
       </div>
       <div>
+        <div class="profile-photo-wrap">
+          <img class="profile-photo" src="images/image.jpg" alt="Ilya Sakharov">
+        </div>
         <div class="card">
           <h3 style="margin-top:0;">Focus Areas</h3>
           <p class="lead">Technology strategy, platform engineering, quality transformation, incident management, and sustainable delivery practices.</p>
