@@ -1,555 +1,392 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="/images/light-bulb.png"/>
-
-    <!-- Updated SEO meta -->
-    <title>Engineering Leadership Consulting | Fractional CTO & Technology Executive – Ilya Sakharov</title>
-    <meta name="description" content="Ilya Sakharov is a technology executive and fractional CTO helping high-growth companies with engineering leadership, platform engineering, cloud cost optimisation, and scaling engineering organisations, platforms, and culture.">
-    <meta name="keywords" content="engineering leadership consulting,fractional CTO,technology executive,platform engineering consulting,SRE and observability,cloud cost optimisation,engineering org design,CTO advisory,engineering leadership coaching">
-
-    <link rel="stylesheet" href="styles.css">
-    <script type="application/ld+json">
-            {
-              "@context": "https://schema.org",
-              "@graph": [
-                {
-                  "@type": "Person",
-                  "@id": "https://www.ilyasakharov.com/#person",
-                  "name": "Ilya Sakharov",
-                  "url": "https://www.ilyasakharov.com/",
-                  "jobTitle": [
-                    "Technology Executive",
-                    "Fractional CTO",
-                    "Executive Director of Engineering"
-                  ],
-                  "description": "Technology executive and fractional CTO providing engineering leadership consulting, platform engineering and SRE guidance, and cloud cost and performance optimisation for high-growth companies.",
-                  "worksFor": {
-                    "@type": "Organization",
-                    "name": "Redcare Pharmacy"
-                  },
-                  "knowsAbout": [
-                    "Engineering leadership consulting",
-                    "Platform engineering",
-                    "Site Reliability Engineering (SRE)",
-                    "Observability",
-                    "Cloud cost optimisation",
-                    "Engineering organisation design",
-                    "CTO advisory",
-                    "Engineering leadership coaching"
-                  ],
-                  "sameAs": [
-                    "https://www.linkedin.com/in/ilyasakharov/",
-                    "https://ilyasakharov.substack.com/"
-                  ]
-                },
-                {
-                  "@type": "FAQPage",
-                  "@id": "https://www.ilyasakharov.com/#faq",
-                  "mainEntity": [
-                    {
-                      "@type": "Question",
-                      "name": "What types of companies do you work with?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "I work with high-growth technology and product companies that need engineering leadership consulting, fractional CTO support, or help scaling their platform engineering and SRE capabilities."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "What problems do you typically solve as a fractional CTO?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Typical engagements focus on clarifying technology strategy, fixing delivery and reliability issues, building platform engineering and observability practices, and redesigning engineering organisations for scale."
-                      }
-                    },
-                    {
-                      "@type": "Question",
-                      "name": "Do you offer remote or advisory-only engagements?",
-                      "acceptedAnswer": {
-                        "@type": "Answer",
-                        "text": "Yes. Most work is delivered remotely through CTO advisory sessions, workshops with engineering leadership teams, and structured coaching for managers and tech leads."
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ilya Sakharov — Technology Executive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b1021;
+      --bg-2: #0f172a;
+      --card: rgba(255, 255, 255, 0.04);
+      --card-strong: rgba(255, 255, 255, 0.08);
+      --accent: #10d9a1;
+      --accent-2: #7cf4ff;
+      --text: #f4f6fb;
+      --muted: #c8d0e0;
+      --border: rgba(255, 255, 255, 0.12);
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, rgba(16, 217, 161, 0.08), transparent 30%),
+                  radial-gradient(circle at 80% 0%, rgba(124, 244, 255, 0.12), transparent 35%),
+                  linear-gradient(160deg, var(--bg), var(--bg-2));
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(14px);
+      background: rgba(11, 16, 33, 0.85);
+      border-bottom: 1px solid var(--border);
+    }
+    nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      margin-left: 18px;
+      font-size: 0.95rem;
+      opacity: 0.82;
+      transition: opacity 0.2s ease, color 0.2s ease;
+    }
+    nav a:hover { opacity: 1; color: var(--accent); }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 28px;
+      padding: 40px;
+      margin-top: 30px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-family: 'Space Grotesk', 'Inter', sans-serif;
+      font-size: clamp(36px, 5vw, 54px);
+      letter-spacing: -0.02em;
+    }
+    .tagline {
+      font-size: 1.2rem;
+      color: var(--muted);
+      margin-bottom: 22px;
+      max-width: 720px;
+    }
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0c0f1a;
+      border: none;
+      box-shadow: 0 12px 25px rgba(16, 217, 161, 0.25);
+    }
+    .btn:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.3); }
+    .btn-primary:hover { box-shadow: 0 16px 35px rgba(16,217,161,0.35); }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .stat {
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--card-strong);
+    }
+    .stat .number {
+      display: block;
+      font-family: 'Space Grotesk', 'Inter', sans-serif;
+      font-size: 1.4rem;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+    section { margin-top: 60px; }
+    section h2 {
+      margin: 0 0 12px;
+      font-family: 'Space Grotesk', 'Inter', sans-serif;
+      letter-spacing: -0.01em;
+    }
+    section p.lead {
+      margin: 0 0 14px;
+      color: var(--muted);
+      max-width: 760px;
+    }
+    .timeline {
+      border-left: 2px solid var(--border);
+      margin-top: 28px;
+    }
+    .role {
+      padding: 0 0 28px 22px;
+      position: relative;
+    }
+    .role::before {
+      content: '';
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--accent);
+      position: absolute;
+      left: -6px;
+      top: 6px;
+      box-shadow: 0 0 0 6px rgba(16, 217, 161, 0.12);
+    }
+    .role-title { font-weight: 700; }
+    .role-meta { color: var(--muted); font-size: 0.95rem; margin: 6px 0 10px; }
+    .role ul {
+      padding-left: 18px;
+      margin: 6px 0;
+      color: var(--muted);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .card {
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+    .company-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .badge {
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
+      font-weight: 600;
+      color: var(--text);
+    }
+    .footer {
+      margin-top: 70px;
+      padding: 24px 0 0;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; padding: 28px; }
+      nav { flex-wrap: wrap; gap: 10px; }
+    }
+    @media (max-width: 520px) {
+      nav { justify-content: center; text-align: center; }
+      nav a { margin: 6px; }
+      .container { padding: 28px 16px 60px; }
+      .hero { padding: 24px; }
+      .cta-row { flex-direction: column; }
+    }
+  </style>
 </head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-KYGHJ618TV"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-KYGHJ618TV');
-</script>
 <body>
- <nav class="navbar" id="navbar">
-    <div class="nav-container">
-        <div class="nav-left">
-            <!-- Theme toggle (moved to far left, before name) -->
-            <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme">
-                <span class="theme-toggle-icon" id="themeToggleIcon">🌙</span>
-                <span class="theme-toggle-label" id="themeToggleLabel">Dark</span>
-            </button>
-            <div class="nav-brand">Ilya Sakharov</div>
-        </div>
+  <header>
+    <nav>
+      <div>Ilya Sakharov</div>
+      <div>
+        <a href="#experience">Experience</a>
+        <a href="#companies">Companies</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </nav>
+  </header>
 
-        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
-            <span class="hamburger"></span>
-            <span class="hamburger"></span>
-            <span class="hamburger"></span>
-        </button>
-        <ul class="nav-menu" id="navMenu">
-            <li><a href="#about" class="nav-link">About</a></li>
-            <li><a href="#work-experience" class="nav-link">Work Experience</a></li>
-            <li><a href="#services" class="nav-link">Services & Consulting</a></li>
-            <li><a href="#publications" class="nav-link">Publications</a></li>
-            <li><a href="#contact" class="nav-link">Contact</a></li>
-        </ul>
-    </div>
-</nav>
-
+  <main class="container">
     <section class="hero">
-        <div class="hero-content">
-            <!-- Updated H1 + subtitle for keyword focus -->
-            <h1>Ilya Sakharov</h1>
-            <h2> Fractional Technology Executive VP/CTO</h2>
-            <p class="hero-subtitle">
-                Engineering leadership consulting focused on scaling platforms, teams, and culture for growth.
-            </p>
-            <a href="#about" class="cta-button">Learn More</a>
+      <div>
+        <h1>Technology Executive & Engineering Leader</h1>
+        <p class="tagline">
+          Board-level technology leader with 25+ years guiding engineering organizations through scale, transformation, and operational resilience across Europe, Israel, and the U.S.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="mailto:ilya.sakharov@gmail.com">Email Ilya</a>
+          <a class="btn" href="https://www.linkedin.com/in/ilyasakharov/" target="_blank" rel="noreferrer">LinkedIn</a>
+          <a class="btn" href="#experience">View Experience</a>
         </div>
+        <div class="stats">
+          <div class="stat">
+            <span class="number">25+ years</span>
+            Leading engineering, quality, and platform organizations across multiple industries.
+          </div>
+          <div class="stat">
+            <span class="number">200+ engineers</span>
+            Direct leadership of multi-country teams with complex stakeholder landscapes.
+          </div>
+          <div class="stat">
+            <span class="number">Elite DORA</span>
+            Drove continuous delivery and operational excellence to Elite performance levels.
+          </div>
+          <div class="stat">
+            <span class="number">45% infra savings</span>
+            Delivered material cost optimizations without sacrificing reliability or quality.
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <h3 style="margin-top:0;">Focus Areas</h3>
+          <p class="lead">Technology strategy, platform engineering, quality transformation, incident management, and sustainable delivery practices.</p>
+          <div class="pill">Engineering Strategy</div>
+          <div class="pill">Platform & SRE</div>
+          <div class="pill">Quality & Reliability</div>
+          <div class="pill">Cost Efficiency</div>
+          <div class="pill">Executive Leadership</div>
+          <div class="pill">Hybrid Workforce Models</div>
+        </div>
+      </div>
     </section>
 
-    <section id="about" class="section">
-        <div class="container">
-            <h2 class="section-title">About Me</h2>
-            <div class="about-content">
-                <div class="about-photo-wrapper">
-                    <img src="images/image.jpg" alt="Photo of Ilya Sakharov" class="about-photo">
-                </div>
-                <!-- Rewritten intro for keyword intent -->
-                <p>
-                    After 25+ years in technology, I offer my experience as a <strong>technology executive</strong> 
-                    and <strong>fractional VP/CTO</strong> helping high-growth companies scale their
-                    <strong>engineering organisations</strong>, <strong>platforms</strong>, and
-                    <strong>cloud infrastructure</strong>. I’ve led engineering organisations through hyper-growth, transformation, 
-                    and “this really shouldn’t be down” moments, turning chaos into scalable platforms, sane processes, 
-                    and teams that actually enjoy shipping.
-                </p>
-
-                <p>
-                    Today, I lead engineering at <strong>Redcare Pharmacy</strong>, where 170+ engineers keep Europe’s largest
-                    e-pharmacy running across eRX, webshop, apps, payments, and multi-country operations. My focus areas
-                    include <strong>platform engineering</strong>, <strong>SRE and observability</strong>,
-                    <strong>cost and performance optimisation</strong>, and
-                    <strong>engineering leadership coaching</strong>.
-                </p>
-
-                <!-- Original narrative kept, now following the more keyword-rich intro -->
-                <p>
-                    Before this, I was <strong>CTO at Codility</strong>, steering the company through a market downturn,
-                    a refinancing, and a tech transformation—simultaneously increasing release velocity and keeping customer
-                    satisfaction above 95%. I also cut AWS costs by 45% in four months, which confused enough people that I
-                    had to assure them nothing important had been unplugged. Acting as interim Head of Product, I helped teams
-                    ship more in one quarter than they had in the previous year. Turns out clarity, discovery, and outcome
-                    focus work wonders.
-                </p>
-
-                <p>
-                    Before that, I built and scaled platform, infrastructure, SRE, and quality organizations at companies
-                    like <strong>Getir</strong>, <strong>HelloFresh</strong>, and <strong>RSA Security</strong>. From turning infrastructure into a
-                    self-service developer platform, to reducing MTTR below 40 minutes, to saving hundreds of thousands
-                    per month in cloud costs, the theme has been consistent: make systems robust, teams effective, and
-                    investments in technology actually pay off.
-                </p>
-
-                <p>
-                    My philosophy is straightforward: engineering is a strategic asset, not a cost center. Great teams
-                    outperform great processes. And the job of technology leadership is to create clarity, remove noise,
-                    and build organizations capable of solving tomorrow’s problems – not just firefighting today’s.
-                </p>
-
-                <p>
-                    If you’re dealing with scale, complexity, legacy platforms, or organizational growing pains – and
-                    you’re looking for someone who will bring experience, challenge your assumptions, and stay focused on
-                    outcomes – we should talk. I’m particularly interested in collaborations around platform strategy,
-                    org design, engineering excellence, and making technology a genuine competitive advantage rather than
-                    an expensive liability.
-                </p>
-
-                <div class="tech-stack">
-                    <h3>Expertise</h3>
-                    <!-- Reworked expertise into clustered list -->
-                    <ul class="expertise-list">
-                        <li><strong>Engineering Leadership Consulting</strong> – CTO advisory, executive coaching, org design.</li>
-                        <li><strong>Platform Engineering &amp; SRE</strong> – developer platforms, observability, incident management.</li>
-                        <li><strong>Cloud Cost &amp; Performance Optimisation</strong> – AWS cost reduction, scalability, reliability.</li>
-                        <li><strong>Quality Engineering &amp; Delivery</strong> – release engineering, CI/CD, test automation at scale.</li>
-                        <li><strong>Engineering Org Scaling</strong> – hiring, hybrid teams, operating models, engineering excellence.</li>
-                    </ul>
-                </div>
-            </div>
-
+    <section id="experience">
+      <h2>Experience</h2>
+      <p class="lead">Executive leadership across scale-ups and global enterprises, translating business ambition into measurable engineering outcomes.</p>
+      <div class="timeline">
+        <div class="role">
+          <div class="role-title">Executive Director of Engineering — Redcare Pharmacy</div>
+          <div class="role-meta">Berlin · 2025–Present</div>
+          <ul>
+            <li>Leading 200+ engineers across eRX, WebShop, Apps, Payments, and multi-country operations.</li>
+            <li>Introduced platform engineering, observability, and incident management to improve resilience.</li>
+            <li>Defined engineering excellence standards and shifted quality ownership to product teams.</li>
+          </ul>
         </div>
+        <div class="role">
+          <div class="role-title">Chief Technology Officer — Codility</div>
+          <div class="role-meta">Berlin / Warsaw · 2022–2025 (promoted from VP Engineering)</div>
+          <ul>
+            <li>Raised CSAT above 95% and achieved Elite DORA performance.</li>
+            <li>Increased release throughput dramatically while navigating refinancing and reorganization.</li>
+            <li>Reduced AWS costs by 45% in four months without compromising stability.</li>
+          </ul>
+        </div>
+        <div class="role">
+          <div class="role-title">Director of Engineering, Infrastructure Alliance — Getir</div>
+          <div class="role-meta">Berlin · 2021–2022</div>
+          <ul>
+            <li>Led platform, core engineering, QA, corporate IT, and standards for 140+ engineers.</li>
+            <li>Shifted to self-service platform model; optimized infrastructure spend by $300K+ per month.</li>
+            <li>Chaired technical standards and supported PCI-DSS readiness.</li>
+          </ul>
+        </div>
+        <div class="role">
+          <div class="role-title">Senior Director of Platform Engineering — HelloFresh SE</div>
+          <div class="role-meta">Berlin · 2018–2021</div>
+          <ul>
+            <li>Built and scaled SRE, release engineering, and platform capabilities globally.</li>
+            <li>Brought MTTD below 30s and MTTR below 40m; improved developer NPS from 30 to 70.</li>
+            <li>Earlier as Director of QA: established modern automation frameworks and lean quality practices.</li>
+          </ul>
+        </div>
+        <div class="role">
+          <div class="role-title">Director of Engineering in Test — RSA Security (Dell)</div>
+          <div class="role-meta">Israel · 2012–2018</div>
+          <ul>
+            <li>Led quality engineering for Fraud & Risk Intelligence across on-prem, private cloud, and Azure products.</li>
+            <li>Operated in high-trust, security-critical environments where reliability was central to customer value.</li>
+          </ul>
+        </div>
+        <div class="role">
+          <div class="role-title">QA Architect — CA Technologies</div>
+          <div class="role-meta">2011–2012</div>
+        </div>
+        <div class="role">
+          <div class="role-title">SDET / Test Architect — Microsoft</div>
+          <div class="role-meta">2007–2011</div>
+        </div>
+        <div class="role">
+          <div class="role-title">Earlier Engineering & Test Leadership Roles</div>
+          <div class="role-meta">Since 1997</div>
+        </div>
+      </div>
     </section>
 
-    <section id="work-experience" class="section section-alt">
-        <div class="container">
-            <h2 class="section-title">Work Experience</h2>
-            <div class="experience-timeline">
-
-                <!-- Redcare -->
-                <div class="experience-item" data-experience>
-                    <div class="experience-logo">
-                        <img src="images/logo-redcare-pharmacy.png" alt="Redcare Pharmacy logo">
-                    </div>
-                    <div class="experience-body">
-                        <div class="experience-header">
-                            <h3>Executive Director of Engineering</h3>
-                            <span class="experience-period">2025 – Present</span>
-                        </div>
-                        <p class="experience-company">Redcare Pharmacy, Berlin</p>
-                        <div class="experience-content">
-                            <ul class="experience-details">
-                                <li>Leading 170+ engineers across eRX, webshop, apps, payments, and multi-country operations.</li>
-                                <li>Introduced platform engineering, observability, and incident management practices.</li>
-                                <li>Shifted quality ownership to product teams; defined engineering excellence standards.</li>
-                                <li>Managing hybrid workforce models (FTE, contractors, agencies) for scalable delivery.</li>
-                            </ul>
-                        </div>
-                        <button class="experience-toggle" type="button">Read more...</button>
-                    </div>
-                </div>
-
-                <!-- Codility -->
-                <div class="experience-item" data-experience>
-                    <div class="experience-logo">
-                        <img src="images/logo-codility.png" alt="Codility logo">
-                    </div>
-                    <div class="experience-body">
-                        <div class="experience-header">
-                            <h3>Chief Technology Officer</h3>
-                            <span class="experience-period">2022 – 2025</span>
-                        </div>
-                        <p class="experience-company">Codility, Berlin</p>
-                        <div class="experience-content">
-                            <ul class="experience-details">
-                                <li>Boosted CSAT above 95% while increasing delivery velocity year-over-year.</li>
-                                <li>Defined & executed tech and data vision aligned to business outcomes.</li>
-                                <li>Cut AWS costs by 45% in 4 months and modernized delivery processes.</li>
-                                <li>Acted as interim Head of Product; built discovery-driven product culture.</li>
-                                <li>Led company through downturn, refinancing, cost optimization, and reorganization.</li>
-                            </ul>
-                        </div>
-                        <button class="experience-toggle" type="button">Read more...</button>
-                    </div>
-                </div>
-
-                <!-- Getir -->
-                <div class="experience-item" data-experience>
-                    <div class="experience-logo">
-                        <img src="images/logo-getir.png" alt="Getir logo">
-                    </div>
-                    <div class="experience-body">
-                        <div class="experience-header">
-                            <h3>Director of Engineering – Infrastructure Alliance</h3>
-                            <span class="experience-period">2021 – 2022</span>
-                        </div>
-                        <p class="experience-company">Getir, Berlin</p>
-                        <div class="experience-content">
-                            <ul class="experience-details">
-                                <li>Led platform, core engineering, QA, corporate IT, and standards for 140+ engineers globally.</li>
-                                <li>Transformed infrastructure into a self-service developer platform.</li>
-                                <li>Drove $300K+ monthly cloud savings through optimization.</li>
-                                <li>Built global corporate IT; led SAP HANA4 ERP implementation planning.</li>
-                                <li>Chaired technical standards committee driving hiring and engineering excellence.</li>
-                            </ul>
-                        </div>
-                        <button class="experience-toggle" type="button">Read more...</button>
-                    </div>
-                </div>
-
-                <!-- HelloFresh -->
-                <div class="experience-item" data-experience>
-                    <div class="experience-logo">
-                        <img src="images/logo-hellofresh.png" alt="HelloFresh logo">
-                    </div>
-                    <div class="experience-body">
-                        <div class="experience-header">
-                            <h3>Senior Director of Platform Engineering</h3>
-                            <span class="experience-period">2018 – 2021</span>
-                        </div>
-                        <p class="experience-company">HelloFresh SE, Berlin</p>
-                        <div class="experience-content">
-                            <ul class="experience-details">
-                                <li>Led global platform engineering, release engineering, and SRE organizations.</li>
-                                <li>Introduced observability and incident response, reducing MTTR below 40 minutes.</li>
-                                <li>Enabled hyper-growth with scalable cloud and developer tooling.</li>
-                                <li>Improved developer tooling satisfaction (NPS +40).</li>
-                                <li>Built modern QA organization and automation frameworks.</li>
-                            </ul>
-                        </div>
-                        <button class="experience-toggle" type="button">Read more...</button>
-                    </div>
-                </div>
-
-                <!-- RSA -->
-                <div class="experience-item" data-experience>
-                    <div class="experience-logo">
-                        <img src="images/logo-rsa-security.png" alt="RSA Security logo">
-                    </div>
-                    <div class="experience-body">
-                        <div class="experience-header">
-                            <h3>Director of Engineering in Test</h3>
-                            <span class="experience-period">2012 – 2018</span>
-                        </div>
-                        <p class="experience-company">RSA Security (Dell Company), Israel</p>
-                        <div class="experience-content">
-                            <ul class="experience-details">
-                                <li>Led global QE organization for fraud prevention products.</li>
-                                <li>Drove industry recognition: Gartner Leader, CompSec Award.</li>
-                            </ul>
-                        </div>
-                        <button class="experience-toggle" type="button">Read more...</button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
+    <section id="companies">
+      <h2>Companies</h2>
+      <p class="lead">I have partnered with industry leaders and high-growth scale-ups across e-commerce, developer tools, security, and enterprise software.</p>
+      <div class="company-badges">
+        <span class="badge">Redcare Pharmacy</span>
+        <span class="badge">Codility</span>
+        <span class="badge">Getir</span>
+        <span class="badge">HelloFresh SE</span>
+        <span class="badge">RSA Security (Dell)</span>
+        <span class="badge">CA Technologies</span>
+        <span class="badge">Microsoft</span>
+      </div>
     </section>
 
-<section id="services" class="section">
-    <div class="container">
-        <h2 class="section-title">Engineering Leadership & Consulting Services</h2>
-        <div class="services-grid">
-            <div class="service-card">
-                <div class="service-icon">
-                    <img src="images/technology-strategy.png" alt="Technology strategy illustration">
-                </div>
-                <h3>Technology Strategy &amp; CTO Advisory</h3>
-                <p>
-                    Executive-level <strong>technology strategy</strong> and <strong>CTO advisory</strong> for CEOs, founders,
-                    and boards. Align product, engineering, and platform investments, define pragmatic roadmaps, and build
-                    <strong>engineering leadership</strong> capable of scaling the business.
-                </p>
-            </div>
-            <div class="service-card">
-                <div class="service-icon">
-                    <img src="images/platform-engineering.png" alt="Platform engineering illustration">
-                </div>
-                <h3>Platform Engineering Consulting</h3>
-                <p>
-                    Design and leadership of <strong>platform engineering</strong>, <strong>SRE</strong>, and
-                    <strong>observability</strong> organisations. From developer platforms and self-service infrastructure
-                    to incident response and reliability, ship faster without breaking everything.
-                </p>
-            </div>
-            <div class="service-card">
-                <div class="service-icon">
-                    <img src="images/cost-performance.png" alt="Cost and performance optimization illustration">
-                </div>
-                <h3>Cloud Cost &amp; Performance Optimisation</h3>
-                <p>
-                    <strong>Cloud cost optimisation consulting</strong> grounded in real-world experience cutting AWS spend
-                    while improving performance. Reduce waste, modernise infrastructure, and keep systems reliable under growth.
-                </p>
-            </div>
-            <div class="service-card">
-                <div class="service-icon">
-                    <img src="images/engineering-org-scaling.png" alt="Engineering organization scaling illustration">
-                </div>
-                <h3>Engineering Organisation Design &amp; Scaling</h3>
-                <p>
-                    <strong>Engineering org design</strong>, <strong>engineering leadership coaching</strong>, and
-                    <strong>process modernisation</strong>. Build organisations that can sustain hyper-growth:
-                    clear ownership, resilient teams, and pragmatic processes.
-                </p>
-            </div>
-             <div class="service-card">
-                <div class="service-icon">
-                    <img src="images/personnel-duties.webp" alt="Professional mentoring and coaching illustration">
-                </div>
-                <h3>Coaching, Mentoring &amp; Technical Interviewing</h3>
-                <p>
-                    1:1 <strong>engineering leadership coaching</strong>, mentoring for new managers, and coaching on
-                    <strong>technical interviewing</strong>. Support for candidates and teams preparing for engineering
-                    leadership and <strong>CTO roles</strong>.
-                </p>
-            </div>
+    <section>
+      <h2>Education & Languages</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="role-title">B.Sc. Information Systems & Software Development</div>
+          <div class="role-meta">Champlain College, VT · Summa Cum Laude</div>
         </div>
+        <div class="card">
+          <div class="role-title">Languages</div>
+          <p class="lead" style="margin: 6px 0 0;">Hebrew (native), Russian (native), English (full professional), German (conversational).</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2>Contact</h2>
+      <p class="lead">Open to board-level and senior technology leadership roles, advisory work, and transformation mandates.</p>
+      <div class="cta-row" style="margin-top:12px;">
+        <a class="btn btn-primary" href="mailto:ilya.sakharov@gmail.com">ilya.sakharov@gmail.com</a>
+        <a class="btn" href="https://www.linkedin.com/in/ilyasakharov/" target="_blank" rel="noreferrer">LinkedIn Profile</a>
+        <a class="btn" href="tel:+491725469093">+49 172 5469093</a>
+      </div>
+    </section>
+
+    <div class="footer">
+      Based in Berlin, Germany · Permanent residency · Built for GitHub Pages (just host this index.html).
     </div>
-</section>
-
-<!-- NEW: Publications section -->
-<section id="publications" class="section section-alt">
-    <div class="container">
-        <h2 class="section-title">Writing &amp; Publications on Engineering Leadership</h2>
-        <div class="publications-grid">
-            <article class="publication-card">
-                <a href="https://ilyasakharov.substack.com/p/three-body-problem-in-sets-of-values" target="_blank" rel="noopener noreferrer" class="publication-link">
-                    <div class="publication-image-wrapper">
-                        <img src="images/3-body-problem.jpg" alt="Three-body problem in sets of values" class="publication-image">
-                    </div>
-                    <div class="publication-content">
-                        <h3 class="publication-title">"Three-body problem" in sets of values</h3>
-                        <p class="publication-subtitle">On the shifting orbits of universal, personal, and professional values.</p>
-                    </div>
-                </a>
-            </article>
-
-            <article class="publication-card">
-                <a href="https://ilyasakharov.substack.com/p/first-time-manager-truth-will-set" target="_blank" rel="noopener noreferrer" class="publication-link">
-                    <div class="publication-image-wrapper">
-                        <img src="images/First-time-managers.jpg" alt="First time manager: truth will set you free" class="publication-image">
-                    </div>
-                    <div class="publication-content">
-                        <h3 class="publication-title">First time manager: truth will set you free</h3>
-                        <p class="publication-subtitle">On the realities, tradeoffs, and leverage of first-line management.</p>
-                    </div>
-                </a>
-            </article>
-
-            <article class="publication-card">
-                <a href="https://ilyasakharov.substack.com/p/from-concept-to-practice-bypassing" target="_blank" rel="noopener noreferrer" class="publication-link">
-                    <div class="publication-image-wrapper">
-                        <img src="images/from-idea-to-pracrtice.jpg" alt="From concept to practice, bypassing function" class="publication-image">
-                    </div>
-                    <div class="publication-content">
-                        <h3 class="publication-title">From concept to practice, bypassing function</h3>
-                        <p class="publication-subtitle">Why teams get implementation wrong even when the idea is right.</p>
-                    </div>
-                </a>
-            </article>
-
-            <article class="publication-card">
-                <a href="https://ilyasakharov.substack.com/p/innovating-when-software-is-boring" target="_blank" rel="noopener noreferrer" class="publication-link">
-                    <div class="publication-image-wrapper">
-                        <img src="images/innovation-when-boring.jpg" alt="Innovating when software is boring" class="publication-image">
-                    </div>
-                    <div class="publication-content">
-                        <h3 class="publication-title">Innovating when software is boring</h3>
-                        <p class="publication-subtitle">On building product and engineering edge in unsexy domains.</p>
-                    </div>
-                </a>
-            </article>
-
-            <article class="publication-card">
-                <a href="https://ilyasakharov.substack.com/p/little-giants-of-tech" target="_blank" rel="noopener noreferrer" class="publication-link">
-                    <div class="publication-image-wrapper">
-                        <img src="images/little-giants.jpg" alt="Little Giants of Tech" class="publication-image">
-                    </div>
-                    <div class="publication-content">
-                        <h3 class="publication-title">Little Giants of Tech</h3>
-                        <p class="publication-subtitle">On why first-line leaders quietly decide whether change sticks.</p>
-                    </div>
-                </a>
-            </article>
-
-            <article class="publication-card">
-                <a href="https://ilyasakharov.substack.com/p/driving-change-in-high-viscosity" target="_blank" rel="noopener noreferrer" class="publication-link">
-                    <div class="publication-image-wrapper">
-                        <img src="images/org-viscosity.jpg" alt="Driving change in high-viscosity organizations" class="publication-image">
-                    </div>
-                    <div class="publication-content">
-                        <h3 class="publication-title">Driving change in high-viscosity organizations</h3>
-                        <p class="publication-subtitle">Inertia, viscosity, and what it really takes to make change move.</p>
-                    </div>
-                </a>
-            </article>
-        </div>
-    </div>
-</section>
-
-<!-- NEW: Who I work with -->
-<section id="who-i-work-with" class="section">
-    <div class="container">
-        <h2 class="section-title">Who I Work With</h2>
-        <div class="about-content">
-            <p>
-                I partner with CEOs, founders, and technology leaders who need pragmatic
-                <strong>engineering leadership</strong>, <strong>fractional VP/CTO</strong>, or
-                <strong>platform engineering consulting</strong> support. If you’re dealing with scale, complexity,
-                legacy platforms, or organisational growing pains, we’re likely a fit.
-            </p>
-        </div>
-    </div>
-</section>
-
-<!-- NEW: FAQ section -->
-<section id="faq" class="section section-alt">
-    <div class="container">
-        <h2 class="section-title">Engineering Leadership &amp; Fractional CTO – FAQs</h2>
-
-        <div class="about-content">
-            <h3>What types of companies do you work with?</h3>
-            <p>
-                I work with high-growth technology and product companies that need
-                <strong>engineering leadership consulting</strong>, <strong>fractional CTO support</strong>, or help
-                scaling their <strong>platform engineering</strong> and <strong>SRE</strong> capabilities.
-            </p>
-
-            <h3>What problems do you typically solve as a fractional CTO?</h3>
-            <p>
-                Typical engagements focus on clarifying technology strategy, fixing delivery and reliability issues,
-                building <strong>platform engineering</strong> and <strong>observability</strong> practices, and
-                redesigning <strong>engineering organisations</strong> for scale.
-            </p>
-
-            <h3>Do you offer remote or advisory-only engagements?</h3>
-            <p>
-                Yes. Most work is delivered remotely through <strong>CTO advisory</strong> sessions, workshops with
-                engineering leadership teams, and structured coaching for managers and tech leads.
-            </p>
-        </div>
-    </div>
-</section>
-
-<section id="contact" class="section section-alt">
-    <div class="container">
-        <h2 class="section-title">Get In Touch</h2>
-        <div class="contact-content">
-            <p class="contact-intro">
-                Interested in advisory, consulting, or speaking engagements? Reach out.
-            </p>
-            <div class="contact-methods">
-                <div class="contact-item">
-                    <div class="contact-icon">
-                        <img src="images/contact-email.png" alt="Email icon">
-                    </div>
-                    <div class="contact-info">
-                        <h3>Email</h3>
-                        ilya (@) ilyasakharov.com
-                    </div>
-                </div>
-                <div class="contact-item">
-                    <div class="contact-icon">
-                        <img src="images/contact-linkedin.png" alt="LinkedIn icon">
-                    </div>
-                    <div class="contact-info">
-                        <h3>LinkedIn</h3>
-                        <a href="https://www.linkedin.com/in/ilyasakharov/" target="_blank">linkedin.com/in/ilyasakharov/</a>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
-</section>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <p>&copy; 2025 Ilya Sakharov. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="script.js"></script>
+  </main>
 </body>
 </html>
