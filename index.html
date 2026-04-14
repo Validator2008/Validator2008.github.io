@@ -270,6 +270,82 @@
       color: var(--muted);
       font-size: 0.95rem;
     }
+    /* Writing / latest post */
+    .writing-card {
+      margin-top: 20px;
+      padding: 22px 24px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+    }
+    .writing-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+    .latest-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .latest-label::before {
+      content: '';
+      display: inline-block;
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16,217,161,0.6); }
+      50% { box-shadow: 0 0 0 5px rgba(16,217,161,0); }
+    }
+    .post-title {
+      font-family: 'Space Grotesk', 'Inter', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 6px;
+      text-decoration: none;
+      display: block;
+      transition: color 0.2s;
+    }
+    .post-title:hover { color: var(--accent); }
+    .post-date {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .post-excerpt {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin: 0 0 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      line-clamp: 3;
+      overflow: hidden;
+    }
+    .writing-card-skeleton {
+      animation: shimmer 1.6s infinite;
+      background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 75%);
+      background-size: 200% 100%;
+      border-radius: 6px;
+      height: 14px;
+      margin-bottom: 10px;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
     @media (max-width: 860px) {
       .hero { grid-template-columns: 1fr; padding: 28px; }
       nav { flex-wrap: wrap; gap: 10px; }
@@ -291,6 +367,7 @@
       <div>
         <a href="#experience">Experience</a>
         <a href="#companies">Companies</a>
+        <a href="#writing">Writing</a>
         <a href="#contact">Contact</a>
       </div>
     </nav>
@@ -306,6 +383,7 @@
         <div class="cta-row">
           <a class="btn btn-primary" href="mailto:ilya.sakharov.de@proton.me">Email Ilya</a>
           <a class="btn" href="https://www.linkedin.com/in/ilyasakharov/" target="_blank" rel="noreferrer">LinkedIn</a>
+          <a class="btn" href="https://ilyasakharov.substack.com/" target="_blank" rel="noreferrer">Substack</a>
           <a class="btn" href="#experience">View Experience</a>
         </div>
         <div class="stats">
@@ -443,6 +521,36 @@
       </div>
     </section>
 
+    <section id="writing">
+      <h2>Writing</h2>
+      <p class="lead">I write about engineering leadership, technology strategy, and building resilient organizations at scale.</p>
+
+      <div class="writing-card" id="latest-post-card">
+        <!-- Skeleton shown while loading -->
+        <div id="post-skeleton">
+          <div class="latest-label">Latest Post</div>
+          <div class="writing-card-skeleton" style="width:70%; height:18px; margin-bottom:12px;"></div>
+          <div class="writing-card-skeleton" style="width:30%; height:12px; margin-bottom:14px;"></div>
+          <div class="writing-card-skeleton" style="width:100%;"></div>
+          <div class="writing-card-skeleton" style="width:92%;"></div>
+          <div class="writing-card-skeleton" style="width:80%; margin-bottom:18px;"></div>
+          <div class="writing-card-skeleton" style="width:130px; height:38px; border-radius:10px;"></div>
+        </div>
+        <!-- Populated by JS -->
+        <div id="post-content" style="display:none;">
+          <div class="latest-label">Latest Post</div>
+          <a id="post-title" class="post-title" href="#" target="_blank" rel="noreferrer"></a>
+          <div id="post-date" class="post-date"></div>
+          <p id="post-excerpt" class="post-excerpt"></p>
+          <a id="post-link" class="btn" href="#" target="_blank" rel="noreferrer">Read on Substack &rarr;</a>
+        </div>
+      </div>
+
+      <div class="cta-row" style="margin-top:16px;">
+        <a class="btn" href="https://ilyasakharov.substack.com/" target="_blank" rel="noreferrer">All Posts on Substack &rarr;</a>
+      </div>
+    </section>
+
     <section id="contact">
       <h2>Contact</h2>
       <p class="lead">Open to board-level and senior technology leadership roles, advisory work, and transformation mandates.</p>
@@ -456,5 +564,45 @@
       Based in Berlin, Germany · Permanent residency · Built for GitHub Pages.
     </div>
   </main>
+  <script>
+    (async function loadLatestPost() {
+      const RSS_URL = 'https://ilyasakharov.substack.com/feed';
+      const API = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(RSS_URL);
+
+      try {
+        const res = await fetch(API);
+        if (!res.ok) throw new Error('network');
+        const data = await res.json();
+        if (data.status !== 'ok' || !data.items?.length) throw new Error('no items');
+
+        const post = data.items[0];
+
+        // Strip HTML tags from description for a clean excerpt
+        const tmp = document.createElement('div');
+        tmp.innerHTML = post.description || '';
+        const excerpt = (tmp.textContent || tmp.innerText || '').trim().slice(0, 280);
+
+        const date = post.pubDate
+          ? new Date(post.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+          : '';
+
+        document.getElementById('post-title').textContent = post.title;
+        document.getElementById('post-title').href = post.link;
+        document.getElementById('post-date').textContent = date;
+        document.getElementById('post-excerpt').textContent = excerpt ? excerpt + (excerpt.length >= 280 ? '…' : '') : '';
+        document.getElementById('post-link').href = post.link;
+
+        document.getElementById('post-skeleton').style.display = 'none';
+        document.getElementById('post-content').style.display = 'block';
+      } catch {
+        // On failure, hide the skeleton and show a plain fallback link
+        const card = document.getElementById('latest-post-card');
+        card.innerHTML =
+          '<div class="latest-label">Writing on Substack</div>' +
+          '<p class="post-excerpt" style="margin-bottom:14px;">Thoughts on engineering leadership, technology strategy, and building resilient organizations.</p>' +
+          '<a class="btn" href="https://ilyasakharov.substack.com/" target="_blank" rel="noreferrer">Read on Substack &rarr;</a>';
+      }
+    })();
+  </script>
 </body>
 </html>
