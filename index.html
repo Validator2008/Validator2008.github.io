@@ -311,14 +311,18 @@
         0 0 0 2.5px var(--accent),
         0 0 28px rgba(16, 217, 161, 0.35),
         0 8px 30px rgba(0, 0, 0, 0.5);
-      transition: box-shadow 0.3s ease, transform 0.3s ease;
+      transition: box-shadow 0.45s ease, transform 0.45s ease;
+      position: relative;
+      z-index: 0;
+      cursor: default;
     }
     .profile-photo:hover {
-      transform: scale(1.03);
+      transform: scale(1.5);
+      z-index: 10;
       box-shadow:
         0 0 0 2.5px var(--accent-2),
-        0 0 40px rgba(124, 244, 255, 0.45),
-        0 10px 40px rgba(0, 0, 0, 0.55);
+        0 0 60px rgba(124, 244, 255, 0.5),
+        0 16px 50px rgba(0, 0, 0, 0.6);
     }
     .footer {
       margin-top: 70px;
