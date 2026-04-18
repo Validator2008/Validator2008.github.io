@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Root Access Denied — Code Singularity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+  <style>
+    :root {
+      --bg: #0b1021;
+      --bg-2: #0f172a;
+      --card: rgba(255, 255, 255, 0.04);
+      --card-strong: rgba(255, 255, 255, 0.08);
+      --accent: #10d9a1;
+      --accent-2: #7cf4ff;
+      --accent-red: #ff4d6d;
+      --text: #f4f6fb;
+      --muted: #c8d0e0;
+      --border: rgba(255, 255, 255, 0.12);
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, rgba(16, 217, 161, 0.08), transparent 30%),
+                  radial-gradient(circle at 80% 0%, rgba(124, 244, 255, 0.12), transparent 35%),
+                  linear-gradient(160deg, var(--bg), var(--bg-2));
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(14px);
+      background: rgba(11, 16, 33, 0.85);
+      border-bottom: 1px solid var(--border);
+    }
+    nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      margin-left: 18px;
+      font-size: 0.95rem;
+      opacity: 0.82;
+      transition: opacity 0.2s ease, color 0.2s ease;
+    }
+    nav a:hover { opacity: 1; color: var(--accent); }
+    nav a.active { opacity: 1; color: var(--accent); }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 600;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0c0f1a;
+      border: none;
+      box-shadow: 0 12px 25px rgba(16, 217, 161, 0.25);
+    }
+    .btn-spotify {
+      background: #1DB954;
+      color: #000;
+      border: none;
+      box-shadow: 0 12px 25px rgba(29, 185, 84, 0.3);
+    }
+    .btn:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.3); }
+    .btn-primary:hover { box-shadow: 0 16px 35px rgba(16,217,161,0.35); }
+    .btn-spotify:hover { box-shadow: 0 16px 35px rgba(29,185,84,0.4); }
+    .card {
+      padding: 18px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 40px;
+      padding: 40px;
+      margin-top: 30px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      align-items: center;
+    }
+    .album-cover {
+      width: 260px;
+      height: 260px;
+      border-radius: 14px;
+      object-fit: cover;
+      box-shadow:
+        0 0 0 2px var(--accent),
+        0 0 60px rgba(16, 217, 161, 0.3),
+        0 24px 60px rgba(0,0,0,0.6);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      flex-shrink: 0;
+    }
+    .album-cover:hover {
+      transform: scale(1.04) rotate(-1deg);
+      box-shadow:
+        0 0 0 2px var(--accent-2),
+        0 0 80px rgba(124, 244, 255, 0.4),
+        0 30px 70px rgba(0,0,0,0.7);
+    }
+    .hero-text h1 {
+      margin: 0 0 6px;
+      font-family: 'Space Grotesk', 'Inter', sans-serif;
+      font-size: clamp(28px, 4vw, 48px);
+      letter-spacing: -0.02em;
+    }
+    .hero-text .album-name {
+      font-family: 'Space Grotesk', 'Inter', sans-serif;
+      font-size: 1.1rem;
+      color: var(--accent);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .hero-text p {
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 0 24px;
+    }
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    /* ── Sections ── */
+    section { margin-top: 60px; }
+    section h2 {
+      margin: 0 0 12px;
+      font-family: 'Space Grotesk', 'Inter', sans-serif;
+      letter-spacing: -0.01em;
+    }
+    section p.lead {
+      margin: 0 0 20px;
+      color: var(--muted);
+      max-width: 760px;
+    }
+
+    /* ── Quotes ── */
+    .quotes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .quote-card {
+      padding: 22px 24px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s ease, transform 0.2s ease;
+    }
+    .quote-card:hover {
+      border-color: rgba(16, 217, 161, 0.3);
+      transform: translateY(-2px);
+    }
+    .quote-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      opacity: 0.7;
+    }
+    .quote-text {
+      font-style: italic;
+      color: var(--muted);
+      font-size: 0.97rem;
+      line-height: 1.75;
+      margin: 0 0 12px;
+    }
+    .quote-text::before { content: '\201C'; color: var(--accent); font-size: 1.4rem; line-height: 0; vertical-align: -0.3em; margin-right: 4px; }
+    .quote-text::after  { content: '\201D'; color: var(--accent); font-size: 1.4rem; line-height: 0; vertical-align: -0.3em; margin-left: 4px; }
+    .quote-source {
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    /* ── Track list ── */
+    .track-list {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .track {
+      display: grid;
+      grid-template-columns: 36px 1fr auto;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      transition: border-color 0.2s ease, background 0.2s ease;
+      text-decoration: none;
+      color: var(--text);
+    }
+    .track:hover {
+      border-color: rgba(16, 217, 161, 0.3);
+      background: var(--card-strong);
+    }
+    .track-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 700;
+      text-align: center;
+    }
+    .track-info .track-title {
+      font-weight: 600;
+      font-size: 0.97rem;
+      display: block;
+    }
+    .track-info .track-theme {
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+    .track-play {
+      font-size: 0.8rem;
+      color: var(--muted);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .track:hover .track-play { opacity: 1; color: var(--accent); }
+
+    /* ── Embed ── */
+    .spotify-wrap {
+      margin-top: 24px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    /* ── Concept section ── */
+    .concept-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .concept-card {
+      padding: 20px 22px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--card);
+    }
+    .concept-card .icon {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+    .concept-card h3 {
+      margin: 0 0 8px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+    }
+    .concept-card p {
+      margin: 0;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 70px;
+      padding: 24px 0 0;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; padding: 28px; text-align: center; }
+      .album-cover { width: 200px; height: 200px; margin: 0 auto; }
+      nav { flex-wrap: wrap; gap: 10px; }
+      .cta-row { justify-content: center; }
+    }
+    @media (max-width: 520px) {
+      nav { justify-content: center; text-align: center; }
+      nav a { margin: 6px; }
+      .container { padding: 28px 16px 60px; }
+      .hero { padding: 24px; }
+      .cta-row { flex-direction: column; align-items: stretch; }
+      .track { grid-template-columns: 28px 1fr; }
+      .track-play { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <div>Ilya Sakharov</div>
+      <div>
+        <a href="/#experience">Experience</a>
+        <a href="/#companies">Companies</a>
+        <a href="/#writing">Writing</a>
+        <a href="/#contact">Contact</a>
+        <a href="/music.html" class="active">Music</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <!-- ── Hero ── -->
+    <section class="hero" style="margin-top:30px;">
+      <img class="album-cover" src="images/root-access-denied-cover.png" alt="Root Access Denied — Code Singularity album cover">
+      <div class="hero-text">
+        <div class="album-name">Debut Album · Code Singularity</div>
+        <h1>Root Access Denied</h1>
+        <p>
+          Metal music forged in the fires of engineering dysfunction. AI-generated, lyrically precise, and therapeutically cathartic for anyone who has survived a sprint review, a deployment freeze, or a meeting that could have been a ticket.
+        </p>
+        <div style="margin-bottom: 20px;">
+          <span class="pill">⚡ AI-Generated Metal</span>
+          <span class="pill">💀 Tech Debt Anthems</span>
+          <span class="pill">🔥 DevOps Lore</span>
+        </div>
+        <div class="cta-row">
+          <a class="btn btn-spotify" href="https://open.spotify.com/artist/143tIjn5mq9gYzQl41qQ7o" target="_blank" rel="noreferrer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+            Listen on Spotify
+          </a>
+          <a class="btn" href="https://open.spotify.com/artist/143tIjn5mq9gYzQl41qQ7o" target="_blank" rel="noreferrer">Follow the Artist →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Spotify Embed ── -->
+    <section>
+      <h2>Stream the Album</h2>
+      <p class="lead">All 9 tracks. One existential crisis. Perfectly served at stand-up volume.</p>
+      <div class="spotify-wrap">
+        <iframe
+          style="border:none; border-radius:14px; display:block;"
+          src="https://open.spotify.com/embed/artist/143tIjn5mq9gYzQl41qQ7o?utm_source=generator&theme=0"
+          width="100%"
+          height="380"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy">
+        </iframe>
+      </div>
+    </section>
+
+    <!-- ── Tracklist ── -->
+    <section>
+      <h2>Track Listing</h2>
+      <p class="lead">Each track is a different engineering horror story. You will recognize all of them.</p>
+      <div class="track-list">
+        <a class="track" href="https://open.spotify.com/artist/143tIjn5mq9gYzQl41qQ7o" target="_blank" rel="noreferrer">
+          <span class="track-num">01</span>
+          <span class="track-info">
+            <span class="track-title">Root Access Denied</span>
+            <span class="track-theme">Privilege escalation meets existential dread in the opening incident report</span>
+          </span>
+          <span class="track-play">▶ Play</span>
+        </a>
+        <a class="track" href="https://open.spotify.com/artist/143tIjn5mq9gYzQl41qQ7o" target="_blank" rel="noreferrer">
+          <span class="track-num">02</span>
+          <span class="track-info">
+            <span class="track-title">No SAFe Way Out</span>
+            <span class="track-theme">Agile frameworks, tribal lore, and the matryoshka of nested modules</span>
+          </span>
+          <span class="track-play">▶ Play</span>
+        </a>
+        <a class="track" href="https://open.spotify.com/artist/143tIjn5mq9gYzQl41qQ7o" target="_blank" rel="noreferrer">
+          <span class="track-num">03</span>
+          <span class="track-info">
+            <span class="track-title">Tech Debt Rising</span>
+            <span class="track-theme">Hotfix after hotfix, until Judgment Day arrives in the shell you made</span>
+          </span>
+          <span class="track-play">▶ Play</span>
+        </a>
+        <a class="track" href="https://open.spotify.com/artist/143tIjn5mq9gYzQl41qQ7o" target="_blank" rel="noreferrer">
+          <span class="track-num">04</span>
+          <span class="track-info">
+            <span class="track-title">Death By Branch</span>
+            <span class="track-theme">Long-lived branches, forgotten pull requests, and Dave the trunk-based prophet</span>
+          </span>
+          <span class="track-play">▶ Play</span>
+        </a>
+        <a class="track" href="https://open.spotify.com/artist/143tIjn5mq9gYzQl41qQ7o" target="_blank" rel="noreferrer">
+          <span class="track-num">05</span>
+          <span class="track-info">
+            <span class="track-title">A Thousand Tiny Graves</span>
+            <span class="track-theme">Microservices hype, distributed monoliths, and the slow crawl back to sanity</span>
+          </span>
+          <span class="track-play">▶ Play</span>
+        </a>
+        <a class="track" href="https://open.spotify.com/artist/143tIjn5mq9gYzQl41qQ7o" target="_blank" rel="noreferrer">
+          <span class="track-num">06</span>
+          <span class="track-info">
+            <span class="track-title">Aether of the Continuous Veil</span>
+            <span class="track-theme">CI/CD as religion — the pipeline that delivers unto us</span>
+          </span>
+          <span class="track-play">▶ Play</span>
+        </a>
+        <a class="track" href="https://open.spotify.com/artist/143tIjn5mq9gYzQl41qQ7o" target="_blank" rel="noreferrer">
+          <span class="track-num">07</span>
+          <span class="track-info">
+            <span class="track-title">Clerics of the Crimson Creed</span>
+            <span class="track-theme">HR frameworks, culture priests, and the builders who break the creed at dawn</span>
+          </span>
+          <span class="track-play">▶ Play</span>
+        </a>
+        <a class="track" href="https://open.spotify.com/artist/143tIjn5mq9gYzQl41qQ7o" target="_blank" rel="noreferrer">
+          <span class="track-num">08</span>
+          <span class="track-info">
+            <span class="track-title">Scope Creep Serpent</span>
+            <span class="track-theme">The beast born from "could we just add one small thing…"</span>
+          </span>
+          <span class="track-play">▶ Play</span>
+        </a>
+        <a class="track" href="https://open.spotify.com/artist/143tIjn5mq9gYzQl41qQ7o" target="_blank" rel="noreferrer">
+          <span class="track-num">09</span>
+          <span class="track-info">
+            <span class="track-title">Sight Beyond the Storm</span>
+            <span class="track-theme">Observability as salvation — from blind chaos to sovereign clarity</span>
+          </span>
+          <span class="track-play">▶ Play</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ── Quotes ── -->
+    <section>
+      <h2>Lines Worth Screaming</h2>
+      <p class="lead">Pulled straight from the lyrics. Every one of these has been true at some sprint somewhere.</p>
+      <div class="quotes-grid">
+        <div class="quote-card">
+          <p class="quote-text">Tech debt rising — feel the system drown. Black code tides pull foundations down. Ghosts in the repo, screaming in sync. We're standing on ruins, closer to the brink.</p>
+          <div class="quote-source">Tech Debt Rising</div>
+        </div>
+        <div class="quote-card">
+          <p class="quote-text">The system breaks not with a scream, but a pull request lost in a broken dream. No rollback spell, no refactor prayer — just silent failure hanging in stale air.</p>
+          <div class="quote-source">Death By Branch</div>
+        </div>
+        <div class="quote-card">
+          <p class="quote-text">SCOPE CREEP SERPENT! LORD OF THE BLOAT! Born from requests that once seemed remote!</p>
+          <div class="quote-source">Scope Creep Serpent</div>
+        </div>
+        <div class="quote-card">
+          <p class="quote-text">We once stood watch, with trembling, sweaty hands, across the chasm of forbidden lands. A thousand errors, born of mortal fear — now banished by the system standing here.</p>
+          <div class="quote-source">Aether of the Continuous Veil</div>
+        </div>
+        <div class="quote-card">
+          <p class="quote-text">They do not build, they do not bleed, yet write the rules for those who lead. They preach of joy, of growth and peace — while tightening grip without release.</p>
+          <div class="quote-source">Clerics of the Crimson Creed</div>
+        </div>
+        <div class="quote-card">
+          <p class="quote-text">From blind despair to sovereign might, we rule with clarity. The war is won, the myths undone — thanks to observability!</p>
+          <div class="quote-source">Sight Beyond the Storm</div>
+        </div>
+        <div class="quote-card">
+          <p class="quote-text">Remember when we said we'd clean it up? After the release — after the push — after the next fire. It's all just technical debt… but now the interest breaks the banks of time.</p>
+          <div class="quote-source">Tech Debt Rising</div>
+        </div>
+        <div class="quote-card">
+          <p class="quote-text">Dave, the prophet, robed in scars, preached to deaf ears beneath DevOps stars: "If it hurts… then bleed again. Bring the pain forward, break the chain."</p>
+          <div class="quote-source">Death By Branch</div>
+        </div>
+        <div class="quote-card">
+          <p class="quote-text">In every scope lies the seed of ruin. Guard it well… or awaken the serpent.</p>
+          <div class="quote-source">Scope Creep Serpent</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Concept section ── -->
+    <section>
+      <h2>What Is This?</h2>
+      <p class="lead">Root Access Denied is a musical experiment at the intersection of software engineering and heavy metal — because some problems deserve more than a postmortem.</p>
+      <div class="concept-grid">
+        <div class="concept-card">
+          <span class="icon">🤖</span>
+          <h3>AI-Generated</h3>
+          <p>Instruments, vocals, and production are fully AI-generated. The engineering pain behind the lyrics, however, is entirely human.</p>
+        </div>
+        <div class="concept-card">
+          <span class="icon">🎸</span>
+          <h3>Metal Genre</h3>
+          <p>Heavy riffs, anthemic choruses, and the kind of intensity that mirrors a 2am production incident. Therapeutic listening guaranteed.</p>
+        </div>
+        <div class="concept-card">
+          <span class="icon">📋</span>
+          <h3>Real Engineering Themes</h3>
+          <p>Every track tackles a genuine software engineering challenge — tech debt, microservice complexity, scope creep, and organizational dysfunction.</p>
+        </div>
+        <div class="concept-card">
+          <span class="icon">💡</span>
+          <h3>Serious Ideas</h3>
+          <p>Dave's trunk-based development sermon. Charity Majors on observability. The distributed monolith trap. The lyrics are lore, not just noise.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="footer" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; align-items:center;">
+      <span>Root Access Denied · Code Singularity · All rights reserved.</span>
+      <a class="btn btn-spotify" style="padding: 8px 14px; font-size: 0.88rem;" href="https://open.spotify.com/artist/143tIjn5mq9gYzQl41qQ7o" target="_blank" rel="noreferrer">
+        Open in Spotify
+      </a>
+    </div>
+  </main>
+</body>
+</html>
