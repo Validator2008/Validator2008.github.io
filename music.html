@@ -325,6 +325,91 @@
       font-size: 0.95rem;
     }
 
+    /* ── Utils dropdown ── */
+    .nav-utils-wrap {
+      position: relative;
+      display: inline-block;
+      margin-left: 18px;
+    }
+    .nav-utils-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      opacity: 0.82;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: opacity 0.2s ease, color 0.2s ease;
+    }
+    .nav-utils-wrap:hover .nav-utils-btn,
+    .nav-utils-wrap.open .nav-utils-btn { opacity: 1; color: var(--accent); }
+    .nav-utils-caret { transition: transform 0.2s ease; }
+    .nav-utils-wrap:hover .nav-utils-caret,
+    .nav-utils-wrap.open .nav-utils-caret { transform: rotate(180deg); }
+    .nav-dropdown {
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      min-width: 210px;
+      background: #0d1526;
+      border: 1px solid rgba(16, 217, 161, 0.22);
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 20px 56px rgba(0,0,0,0.6), 0 0 0 1px rgba(16,217,161,0.07);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-6px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 200;
+    }
+    .nav-dropdown::before {
+      content: '';
+      position: absolute;
+      top: -7px;
+      right: 18px;
+      width: 12px;
+      height: 12px;
+      background: #0d1526;
+      border-left: 1px solid rgba(16, 217, 161, 0.22);
+      border-top: 1px solid rgba(16, 217, 161, 0.22);
+      transform: rotate(45deg);
+    }
+    .nav-utils-wrap:hover .nav-dropdown,
+    .nav-utils-wrap.open .nav-dropdown { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .nav-dropdown a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-left: 0;
+      opacity: 1;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .nav-dropdown a:hover { background: rgba(16, 217, 161, 0.1); color: var(--accent); }
+    .nav-dropdown-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: rgba(16, 217, 161, 0.1);
+      border: 1px solid rgba(16, 217, 161, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.9rem;
+      line-height: 1;
+    }
     @media (max-width: 860px) {
       .hero { grid-template-columns: 1fr; padding: 28px; text-align: center; }
       .album-cover { width: 200px; height: 200px; margin: 0 auto; }
@@ -352,6 +437,18 @@
         <a href="/#writing">Writing</a>
         <a href="/#contact">Contact</a>
         <a href="/music.html" class="active">Music</a>
+        <div class="nav-utils-wrap" id="nav-utils-wrap">
+          <button class="nav-utils-btn" id="nav-utils-btn" aria-haspopup="true" aria-expanded="false">
+            Utils
+            <svg class="nav-utils-caret" width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l4 4 4-4"/></svg>
+          </button>
+          <div class="nav-dropdown" role="menu">
+            <a href="/notepad.html" role="menuitem">
+              <span class="nav-dropdown-icon">🧹</span>
+              Clean Notepad
+            </a>
+          </div>
+        </div>
       </div>
     </nav>
   </header>
@@ -558,5 +655,22 @@
       </a>
     </div>
   </main>
+  <script>
+    (function () {
+      var wrap = document.getElementById('nav-utils-wrap');
+      var btn  = document.getElementById('nav-utils-btn');
+      if (!wrap || !btn) return;
+      btn.addEventListener('click', function () {
+        var open = wrap.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open);
+      });
+      document.addEventListener('click', function (e) {
+        if (!wrap.contains(e.target)) {
+          wrap.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
