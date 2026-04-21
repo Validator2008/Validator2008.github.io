@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clean Notepad — Paste & Strip Formatting</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/images/favicon.png">
+  <style>
+    :root {
+      --bg: #0b1021;
+      --bg-2: #0f172a;
+      --card: rgba(255, 255, 255, 0.04);
+      --card-strong: rgba(255, 255, 255, 0.08);
+      --accent: #10d9a1;
+      --accent-2: #7cf4ff;
+      --text: #f4f6fb;
+      --muted: #c8d0e0;
+      --border: rgba(255, 255, 255, 0.12);
+      --shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, rgba(16, 217, 161, 0.08), transparent 30%),
+                  radial-gradient(circle at 80% 0%, rgba(124, 244, 255, 0.12), transparent 35%),
+                  linear-gradient(160deg, var(--bg), var(--bg-2));
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(14px);
+      background: rgba(11, 16, 33, 0.85);
+      border-bottom: 1px solid var(--border);
+    }
+    nav {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      margin-left: 18px;
+      font-size: 0.95rem;
+      opacity: 0.82;
+      transition: opacity 0.2s ease, color 0.2s ease;
+    }
+    nav a:hover { opacity: 1; color: var(--accent); }
+    nav a.active { opacity: 1; color: var(--accent); }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* Page header */
+    .page-header {
+      margin-top: 30px;
+      margin-bottom: 32px;
+    }
+    .page-header h1 {
+      margin: 0 0 8px;
+      font-family: 'Space Grotesk', 'Inter', sans-serif;
+      font-size: clamp(28px, 4vw, 42px);
+      letter-spacing: -0.02em;
+    }
+    .page-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 600px;
+    }
+
+    /* Toolbar */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px 18px;
+      background: var(--card-strong);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 14px 14px 0 0;
+    }
+    .toolbar-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-right: 4px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 14px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: transparent;
+      text-decoration: none;
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    }
+    .btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,0.3);
+      background: var(--card-strong);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0c0f1a;
+      border: none;
+      box-shadow: 0 8px 20px rgba(16, 217, 161, 0.25);
+    }
+    .btn-primary:hover { box-shadow: 0 12px 28px rgba(16,217,161,0.35); background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+    .btn-danger {
+      color: #ff6b81;
+      border-color: rgba(255, 107, 129, 0.3);
+    }
+    .btn-danger:hover { border-color: rgba(255, 107, 129, 0.6); background: rgba(255, 107, 129, 0.07); }
+    .btn-success {
+      color: var(--accent);
+      border-color: rgba(16, 217, 161, 0.3);
+    }
+    .btn-success:hover { border-color: rgba(16, 217, 161, 0.6); background: rgba(16, 217, 161, 0.07); }
+
+    /* Notepad area */
+    .editor-wrap {
+      position: relative;
+    }
+    #notepad {
+      display: block;
+      width: 100%;
+      min-height: 460px;
+      padding: 22px 24px;
+      background: rgba(5, 10, 22, 0.7);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 14px 14px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', 'Fira Mono', 'Consolas', monospace;
+      font-size: 0.97rem;
+      line-height: 1.75;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s ease;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    #notepad:focus {
+      border-color: rgba(16, 217, 161, 0.35);
+      box-shadow: 0 0 0 2px rgba(16, 217, 161, 0.06) inset;
+    }
+    #notepad::placeholder {
+      color: rgba(200, 208, 224, 0.3);
+      font-style: italic;
+    }
+
+    /* Status bar */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px 18px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-top: 1px solid rgba(255,255,255,0.06);
+      border-radius: 0 0 0 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: -1px;
+    }
+    .status-bar .stat-group {
+      display: flex;
+      gap: 18px;
+    }
+    .status-bar .stat {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .status-bar .stat strong {
+      color: var(--accent);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.88rem;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      padding: 12px 20px;
+      background: var(--card-strong);
+      border: 1px solid rgba(16, 217, 161, 0.3);
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--accent);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+      transform: translateY(12px);
+      opacity: 0;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Info section */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 36px;
+    }
+    .info-card {
+      padding: 18px 20px;
+      border-radius: 13px;
+      border: 1px solid var(--border);
+      background: var(--card);
+    }
+    .info-card .icon {
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .info-card h3 {
+      margin: 0 0 6px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+    }
+    .info-card p {
+      margin: 0;
+      font-size: 0.84rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 70px;
+      padding: 24px 0 0;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* ── Utils dropdown ── */
+    .nav-utils-wrap {
+      position: relative;
+      display: inline-block;
+      margin-left: 18px;
+    }
+    .nav-utils-btn {
+      background: none;
+      border: none;
+      padding: 0;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      opacity: 0.82;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: opacity 0.2s ease, color 0.2s ease;
+    }
+    .nav-utils-wrap:hover .nav-utils-btn,
+    .nav-utils-wrap.open .nav-utils-btn { opacity: 1; color: var(--accent); }
+    .nav-utils-caret { transition: transform 0.2s ease; }
+    .nav-utils-wrap:hover .nav-utils-caret,
+    .nav-utils-wrap.open .nav-utils-caret { transform: rotate(180deg); }
+    .nav-dropdown {
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      min-width: 210px;
+      background: #0d1526;
+      border: 1px solid rgba(16, 217, 161, 0.22);
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 20px 56px rgba(0,0,0,0.6), 0 0 0 1px rgba(16,217,161,0.07);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-6px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 200;
+    }
+    .nav-dropdown::before {
+      content: '';
+      position: absolute;
+      top: -7px;
+      right: 18px;
+      width: 12px;
+      height: 12px;
+      background: #0d1526;
+      border-left: 1px solid rgba(16, 217, 161, 0.22);
+      border-top: 1px solid rgba(16, 217, 161, 0.22);
+      transform: rotate(45deg);
+    }
+    .nav-utils-wrap:hover .nav-dropdown,
+    .nav-utils-wrap.open .nav-dropdown { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .nav-dropdown a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-left: 0;
+      opacity: 1;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .nav-dropdown a:hover { background: rgba(16, 217, 161, 0.1); color: var(--accent); }
+    .nav-dropdown-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: rgba(16, 217, 161, 0.1);
+      border: 1px solid rgba(16, 217, 161, 0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.9rem;
+      line-height: 1;
+    }
+    @media (max-width: 860px) {
+      nav { flex-wrap: wrap; gap: 10px; }
+    }
+    @media (max-width: 520px) {
+      nav { justify-content: center; text-align: center; }
+      nav a { margin: 6px; }
+      .container { padding: 28px 16px 60px; }
+      .toolbar { gap: 8px; }
+      .btn { padding: 8px 11px; font-size: 0.82rem; }
+      #notepad { min-height: 320px; font-size: 0.88rem; padding: 16px; }
+      .toast { bottom: 16px; right: 16px; left: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <div><a href="https://www.ilyasakharov.com/">Ilya Sakharov</a></div>
+      <div>
+        <a href="/#experience">Experience</a>
+        <a href="/#companies">Companies</a>
+        <a href="/#writing">Writing</a>
+        <a href="/#contact">Contact</a>
+        <a href="/music.html">Music</a>
+        <div class="nav-utils-wrap" id="nav-utils-wrap">
+          <button class="nav-utils-btn" id="nav-utils-btn" aria-haspopup="true" aria-expanded="false">
+            Utils
+            <svg class="nav-utils-caret" width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1l4 4 4-4"/></svg>
+          </button>
+          <div class="nav-dropdown" role="menu">
+            <a href="/notepad.html" role="menuitem" class="active-item">
+              <span class="nav-dropdown-icon">🧹</span>
+              Clean Notepad
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="page-header">
+      <h1>Clean Notepad</h1>
+      <p>Paste anything — rich text, web content, emails, docs. All formatting is stripped instantly. What you see is clean, plain text.</p>
+    </div>
+
+    <div class="editor-wrap">
+      <div class="toolbar">
+        <span class="toolbar-label">Notepad</span>
+        <button class="btn btn-success" id="btn-copy" title="Copy all text to clipboard">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy
+        </button>
+        <button class="btn btn-primary" id="btn-export" title="Download as .txt file">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export .txt
+        </button>
+        <button class="btn btn-danger" id="btn-clear" title="Clear all text">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          Clear
+        </button>
+      </div>
+
+      <textarea
+        id="notepad"
+        spellcheck="true"
+        autocomplete="off"
+        placeholder="Paste your content here (Ctrl+V / Cmd+V) or start typing...&#10;&#10;All formatting — fonts, links, tables, colours — will be stripped automatically on paste."
+      ></textarea>
+    </div>
+
+    <div class="status-bar">
+      <div class="stat-group">
+        <div class="stat"><strong id="stat-chars">0</strong> characters</div>
+        <div class="stat"><strong id="stat-words">0</strong> words</div>
+        <div class="stat"><strong id="stat-lines">0</strong> lines</div>
+      </div>
+      <div id="status-msg" style="font-style: italic; color: rgba(200,208,224,0.5);">Ready</div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <span class="icon">🧹</span>
+        <h3>Formatting Stripped</h3>
+        <p>Pasting from Word, Google Docs, emails, or web pages removes all HTML — hyperlinks, bold, tables, font sizes, colours.</p>
+      </div>
+      <div class="info-card">
+        <span class="icon">📋</span>
+        <h3>Clipboard Ready</h3>
+        <p>Hit Copy to put the clean text back on your clipboard, ready to paste anywhere without carrying formatting baggage.</p>
+      </div>
+      <div class="info-card">
+        <span class="icon">💾</span>
+        <h3>Export as .txt</h3>
+        <p>Download the contents as a plain-text file. No server, no upload — everything happens locally in your browser.</p>
+      </div>
+      <div class="info-card">
+        <span class="icon">🔒</span>
+        <h3>Fully Local</h3>
+        <p>Your text never leaves your device. This app has no backend and makes no network requests with your content.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      A small tool by <a href="https://www.ilyasakharov.com/" style="color: var(--accent); text-decoration: none;">Ilya Sakharov</a> · Runs entirely in your browser.
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    (function () {
+      var wrap = document.getElementById('nav-utils-wrap');
+      var btn  = document.getElementById('nav-utils-btn');
+      if (!wrap || !btn) return;
+      btn.addEventListener('click', function () {
+        var open = wrap.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open);
+      });
+      document.addEventListener('click', function (e) {
+        if (!wrap.contains(e.target)) {
+          wrap.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
+  </script>
+  <script>
+    const notepad   = document.getElementById('notepad');
+    const btnCopy   = document.getElementById('btn-copy');
+    const btnExport = document.getElementById('btn-export');
+    const btnClear  = document.getElementById('btn-clear');
+    const toast     = document.getElementById('toast');
+    const statChars = document.getElementById('stat-chars');
+    const statWords = document.getElementById('stat-words');
+    const statLines = document.getElementById('stat-lines');
+    const statusMsg = document.getElementById('status-msg');
+
+    // ── Paste: strip all formatting, keep plain text only ──────────────────
+    notepad.addEventListener('paste', function (e) {
+      e.preventDefault();
+
+      const plain = (e.clipboardData || window.clipboardData).getData('text/plain');
+
+      // Insert at cursor position
+      const start = this.selectionStart;
+      const end   = this.selectionEnd;
+      const before = this.value.substring(0, start);
+      const after  = this.value.substring(end);
+
+      this.value = before + plain + after;
+
+      // Move cursor to end of inserted text
+      const newPos = start + plain.length;
+      this.selectionStart = newPos;
+      this.selectionEnd   = newPos;
+
+      updateStats();
+      setStatus('Formatted content stripped — clean text inserted.');
+    });
+
+    // ── Live stats ──────────────────────────────────────────────────────────
+    notepad.addEventListener('input', updateStats);
+
+    function updateStats() {
+      const text = notepad.value;
+      statChars.textContent = text.length.toLocaleString();
+
+      const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+      statWords.textContent = words.toLocaleString();
+
+      const lines = text === '' ? 0 : text.split('\n').length;
+      statLines.textContent = lines.toLocaleString();
+    }
+
+    function setStatus(msg) {
+      statusMsg.textContent = msg;
+      statusMsg.style.color = 'rgba(16, 217, 161, 0.75)';
+      clearTimeout(setStatus._timer);
+      setStatus._timer = setTimeout(() => {
+        statusMsg.textContent = 'Ready';
+        statusMsg.style.color = 'rgba(200,208,224,0.5)';
+      }, 3000);
+    }
+
+    // ── Copy to clipboard ───────────────────────────────────────────────────
+    btnCopy.addEventListener('click', async () => {
+      const text = notepad.value;
+      if (!text.trim()) { showToast('Nothing to copy.'); return; }
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('Copied to clipboard.');
+      } catch {
+        notepad.select();
+        document.execCommand('copy');
+        showToast('Copied to clipboard.');
+      }
+    });
+
+    // ── Export as .txt ──────────────────────────────────────────────────────
+    btnExport.addEventListener('click', () => {
+      const text = notepad.value;
+      if (!text.trim()) { showToast('Nothing to export.'); return; }
+
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      const ts   = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+
+      a.href     = url;
+      a.download = 'clean-text-' + ts + '.txt';
+      a.click();
+
+      URL.revokeObjectURL(url);
+      showToast('File downloaded.');
+    });
+
+    // ── Clear ───────────────────────────────────────────────────────────────
+    btnClear.addEventListener('click', () => {
+      if (!notepad.value.trim()) return;
+      notepad.value = '';
+      updateStats();
+      setStatus('Cleared.');
+      notepad.focus();
+    });
+
+    // ── Toast helper ────────────────────────────────────────────────────────
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+  </script>
+</body>
+</html>

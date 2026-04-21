@@ -117,7 +117,7 @@
     window.addEventListener('resize', function() { page = 0; updateCarousel(); });
     updateCarousel();
 
-  } catch {
+  } catch (e) {
     // On failure, hide the skeleton and show a plain fallback link
     const card = document.getElementById('latest-post-card');
     card.innerHTML =
@@ -125,4 +125,21 @@
       '<p class="post-excerpt" style="margin-bottom:14px;">Thoughts on engineering leadership, technology strategy, and building resilient organizations.</p>' +
       '<a class="btn" href="https://ilyasakharov.substack.com/" target="_blank" rel="noreferrer">Read on Substack &rarr;</a>';
   }
+})();
+
+// ── Utils nav dropdown toggle ─────────────────────────────────────────────
+(function () {
+  var wrap = document.getElementById('nav-utils-wrap');
+  var btn  = document.getElementById('nav-utils-btn');
+  if (!wrap || !btn) return;
+  btn.addEventListener('click', function () {
+    var open = wrap.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+  });
+  document.addEventListener('click', function (e) {
+    if (!wrap.contains(e.target)) {
+      wrap.classList.remove('open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
 })();

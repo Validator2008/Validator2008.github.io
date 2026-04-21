@@ -545,6 +545,106 @@ section p.lead {
   margin-bottom: 10px;
 }
 @keyframes shimmer { to { background-position: -200% 0; } }
+/* ── Utils dropdown ── */
+.nav-utils-wrap {
+  position: relative;
+  display: inline-block;
+  margin-left: 18px;
+}
+.nav-utils-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  opacity: 0.82;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+.nav-utils-wrap:hover .nav-utils-btn,
+.nav-utils-wrap.open .nav-utils-btn {
+  opacity: 1;
+  color: var(--accent);
+}
+.nav-utils-caret {
+  transition: transform 0.2s ease;
+}
+.nav-utils-wrap:hover .nav-utils-caret,
+.nav-utils-wrap.open .nav-utils-caret {
+  transform: rotate(180deg);
+}
+.nav-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  min-width: 210px;
+  background: #0d1526;
+  border: 1px solid rgba(16, 217, 161, 0.22);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 20px 56px rgba(0,0,0,0.6), 0 0 0 1px rgba(16,217,161,0.07);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 200;
+}
+.nav-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  right: 18px;
+  width: 12px;
+  height: 12px;
+  background: #0d1526;
+  border-left: 1px solid rgba(16, 217, 161, 0.22);
+  border-top: 1px solid rgba(16, 217, 161, 0.22);
+  transform: rotate(45deg);
+}
+.nav-utils-wrap:hover .nav-dropdown,
+.nav-utils-wrap.open .nav-dropdown {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.nav-dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-left: 0;
+  opacity: 1;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.nav-dropdown a:hover {
+  background: rgba(16, 217, 161, 0.1);
+  color: var(--accent);
+}
+.nav-dropdown-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: rgba(16, 217, 161, 0.1);
+  border: 1px solid rgba(16, 217, 161, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
 @media (max-width: 860px) {
   .hero { grid-template-columns: 1fr; padding: 28px; }
   nav { flex-wrap: wrap; gap: 10px; }
