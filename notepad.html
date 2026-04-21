@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clean Notepad — Paste & Strip Formatting</title>
+  <title>Clean Notepad & Signature Tool</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -355,6 +355,147 @@
       font-size: 0.9rem;
       line-height: 1;
     }
+    /* ── Mode tabs ── */
+    .mode-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 24px;
+      border-radius: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 5px;
+      width: fit-content;
+    }
+    .mode-tab {
+      padding: 9px 22px;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.18s ease, color 0.18s ease;
+    }
+    .mode-tab.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #0c0f1a;
+    }
+    .mode-tab:not(.active):hover { color: var(--text); background: var(--card-strong); }
+
+    /* ── Signature panel ── */
+    .sig-panel { display: none; }
+    .sig-panel.visible { display: block; }
+    .notepad-panel { display: block; }
+    .notepad-panel.hidden { display: none; }
+
+    .sig-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px 18px;
+      background: var(--card-strong);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 14px 14px 0 0;
+    }
+    .sig-canvas-wrap {
+      position: relative;
+      line-height: 0;
+    }
+    #sig-canvas {
+      display: block;
+      width: 100%;
+      height: 340px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 14px 14px;
+      cursor: crosshair;
+      touch-action: none;
+    }
+    .sig-hint {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 0.9rem;
+      color: rgba(0, 0, 0, 0.22);
+      pointer-events: none;
+      font-style: italic;
+      font-family: 'Inter', sans-serif;
+      transition: opacity 0.2s ease;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .sig-hint.hidden { opacity: 0; }
+
+    /* Pen color + size controls */
+    .sig-control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sig-control-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .pen-color-swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      padding: 0;
+      overflow: hidden;
+      transition: border-color 0.15s ease;
+    }
+    .pen-color-swatch:hover { border-color: var(--accent); }
+    #pen-color-input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .pen-size-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 80px;
+      height: 4px;
+      border-radius: 4px;
+      background: var(--border);
+      outline: none;
+      cursor: pointer;
+    }
+    .pen-size-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+    }
+    .pen-size-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      border: none;
+    }
+    .sig-separator {
+      width: 1px;
+      height: 24px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
     @media (max-width: 860px) {
       nav { flex-wrap: wrap; gap: 10px; }
     }
@@ -365,7 +506,9 @@
       .toolbar { gap: 8px; }
       .btn { padding: 8px 11px; font-size: 0.82rem; }
       #notepad { min-height: 320px; font-size: 0.88rem; padding: 16px; }
+      #sig-canvas { height: 240px; }
       .toast { bottom: 16px; right: 16px; left: 16px; }
+      .pen-size-slider { width: 60px; }
     }
   </style>
 </head>
@@ -405,6 +548,13 @@
       <p>Paste anything — rich text, web content, emails, docs. All formatting is stripped instantly. What you see is clean, plain text.</p>
     </div>
 
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="tab-notepad">Notepad</button>
+      <button class="mode-tab" id="tab-signature">✍ Signature</button>
+    </div>
+
+    <!-- ── Notepad panel ── -->
+    <div class="notepad-panel" id="notepad-panel">
     <div class="editor-wrap">
       <div class="toolbar">
         <span class="toolbar-label">Notepad</span>
@@ -438,8 +588,44 @@
       </div>
       <div id="status-msg" style="font-style: italic; color: rgba(200,208,224,0.5);">Ready</div>
     </div>
+    </div><!-- end notepad-panel -->
 
-    <div class="info-grid">
+    <!-- ── Signature panel ── -->
+    <div class="sig-panel" id="sig-panel">
+      <div class="sig-toolbar">
+        <span class="toolbar-label">Signature</span>
+        <div class="sig-control-group">
+          <span class="sig-control-label">Ink</span>
+          <button class="pen-color-swatch" id="pen-color-swatch" title="Choose ink color" style="background:#1a1a2e;">
+            <input type="color" id="pen-color-input" value="#1a1a2e">
+          </button>
+        </div>
+        <div class="sig-separator"></div>
+        <div class="sig-control-group">
+          <span class="sig-control-label">Size</span>
+          <input type="range" class="pen-size-slider" id="pen-size" min="1" max="12" value="3">
+        </div>
+        <div class="sig-separator"></div>
+        <button class="btn btn-danger" id="sig-clear">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+          Clear
+        </button>
+        <button class="btn btn-success" id="sig-undo">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+          Undo
+        </button>
+        <button class="btn btn-primary" id="sig-save">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Save PNG
+        </button>
+      </div>
+      <div class="sig-canvas-wrap">
+        <canvas id="sig-canvas"></canvas>
+        <span class="sig-hint" id="sig-hint">Draw your signature here</span>
+      </div>
+    </div><!-- end sig-panel -->
+
+    <div class="info-grid" id="info-grid-notepad">
       <div class="info-card">
         <span class="icon">🧹</span>
         <h3>Formatting Stripped</h3>
@@ -459,6 +645,29 @@
         <span class="icon">🔒</span>
         <h3>Fully Local</h3>
         <p>Your text never leaves your device. This app has no backend and makes no network requests with your content.</p>
+      </div>
+    </div>
+
+    <div class="info-grid" id="info-grid-sig" style="display:none;">
+      <div class="info-card">
+        <span class="icon">✍️</span>
+        <h3>Draw Freely</h3>
+        <p>Sign with your mouse or finger. Adjust ink colour and stroke size to match how your real signature looks.</p>
+      </div>
+      <div class="info-card">
+        <span class="icon">↩️</span>
+        <h3>Undo Strokes</h3>
+        <p>Made a slip? Undo removes the last stroke one at a time, so you can refine without starting from scratch.</p>
+      </div>
+      <div class="info-card">
+        <span class="icon">🖼️</span>
+        <h3>Transparent PNG</h3>
+        <p>Saved files have a fully transparent background — drop your signature onto any document, email, or design without a white box.</p>
+      </div>
+      <div class="info-card">
+        <span class="icon">🔒</span>
+        <h3>Never Uploaded</h3>
+        <p>Your signature is drawn and saved entirely in the browser. Nothing is sent to any server at any point.</p>
       </div>
     </div>
 
@@ -592,6 +801,156 @@
       clearTimeout(showToast._timer);
       showToast._timer = setTimeout(() => toast.classList.remove('show'), 2200);
     }
+  </script>
+
+  <script>
+    // ── Mode tabs ────────────────────────────────────────────────────────────
+    const tabNotepad   = document.getElementById('tab-notepad');
+    const tabSig       = document.getElementById('tab-signature');
+    const notepadPanel = document.getElementById('notepad-panel');
+    const sigPanel     = document.getElementById('sig-panel');
+    const infoNotepad  = document.getElementById('info-grid-notepad');
+    const infoSig      = document.getElementById('info-grid-sig');
+
+    tabNotepad.addEventListener('click', () => {
+      tabNotepad.classList.add('active');
+      tabSig.classList.remove('active');
+      notepadPanel.classList.remove('hidden');
+      sigPanel.classList.remove('visible');
+      infoNotepad.style.display = '';
+      infoSig.style.display     = 'none';
+    });
+    tabSig.addEventListener('click', () => {
+      tabSig.classList.add('active');
+      tabNotepad.classList.remove('active');
+      sigPanel.classList.add('visible');
+      notepadPanel.classList.add('hidden');
+      infoNotepad.style.display = 'none';
+      infoSig.style.display     = '';
+      initCanvas();
+    });
+
+    // ── Signature canvas ─────────────────────────────────────────────────────
+    const canvas   = document.getElementById('sig-canvas');
+    const hint     = document.getElementById('sig-hint');
+    const colorSwatch = document.getElementById('pen-color-swatch');
+    const colorInput  = document.getElementById('pen-color-input');
+    const sizeSlider  = document.getElementById('pen-size');
+    const sigClear    = document.getElementById('sig-clear');
+    const sigUndo     = document.getElementById('sig-undo');
+    const sigSave     = document.getElementById('sig-save');
+
+    let ctx, isDrawing = false, hasMark = false;
+    let undoStack = [];   // stores canvas imageData snapshots per stroke
+
+    function initCanvas() {
+      // Set actual pixel dimensions to match CSS layout
+      const rect = canvas.getBoundingClientRect();
+      if (canvas.width === rect.width && canvas.height === rect.height) return;
+      canvas.width  = Math.round(rect.width  * devicePixelRatio);
+      canvas.height = Math.round(rect.height * devicePixelRatio);
+      ctx = canvas.getContext('2d');
+      ctx.scale(devicePixelRatio, devicePixelRatio);
+      applyPenStyle();
+    }
+
+    function applyPenStyle() {
+      if (!ctx) return;
+      ctx.strokeStyle = colorInput.value;
+      ctx.lineWidth   = Number(sizeSlider.value);
+      ctx.lineCap     = 'round';
+      ctx.lineJoin    = 'round';
+    }
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const src  = e.touches ? e.touches[0] : e;
+      return { x: src.clientX - rect.left, y: src.clientY - rect.top };
+    }
+
+    function saveSnapshot() {
+      undoStack.push(ctx.getImageData(0, 0, canvas.width, canvas.height));
+      if (undoStack.length > 40) undoStack.shift();
+    }
+
+    function onStart(e) {
+      e.preventDefault();
+      if (!ctx) initCanvas();
+      applyPenStyle();
+      saveSnapshot();
+      const p = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      isDrawing = true;
+    }
+
+    function onMove(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+      const p = getPos(e);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+      if (!hasMark) {
+        hasMark = true;
+        hint.classList.add('hidden');
+      }
+    }
+
+    function onEnd(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+      isDrawing = false;
+      ctx.closePath();
+    }
+
+    canvas.addEventListener('mousedown',  onStart);
+    canvas.addEventListener('mousemove',  onMove);
+    canvas.addEventListener('mouseup',    onEnd);
+    canvas.addEventListener('mouseleave', onEnd);
+    canvas.addEventListener('touchstart', onStart, { passive: false });
+    canvas.addEventListener('touchmove',  onMove,  { passive: false });
+    canvas.addEventListener('touchend',   onEnd,   { passive: false });
+
+    // ── Ink color ────────────────────────────────────────────────────────────
+    colorSwatch.addEventListener('click', () => colorInput.click());
+    colorInput.addEventListener('input', () => {
+      colorSwatch.style.background = colorInput.value;
+      applyPenStyle();
+    });
+
+    // ── Undo ─────────────────────────────────────────────────────────────────
+    sigUndo.addEventListener('click', () => {
+      if (!ctx || undoStack.length === 0) { showToast('Nothing to undo.'); return; }
+      ctx.putImageData(undoStack.pop(), 0, 0);
+      if (undoStack.length === 0) {
+        hasMark = false;
+        hint.classList.remove('hidden');
+      }
+    });
+
+    // ── Clear ─────────────────────────────────────────────────────────────────
+    sigClear.addEventListener('click', () => {
+      if (!ctx) return;
+      saveSnapshot();
+      ctx.clearRect(0, 0, canvas.width / devicePixelRatio, canvas.height / devicePixelRatio);
+      hasMark = false;
+      hint.classList.remove('hidden');
+    });
+
+    // ── Save as PNG (transparent background) ─────────────────────────────────
+    sigSave.addEventListener('click', () => {
+      if (!ctx || !hasMark) { showToast('Draw your signature first.'); return; }
+
+      // The canvas has no background fill — only drawn strokes are pixels.
+      // toDataURL captures alpha = 0 where nothing was drawn → transparent PNG.
+      const url = canvas.toDataURL('image/png');
+      const a   = document.createElement('a');
+      const ts  = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+      a.href     = url;
+      a.download = 'signature-' + ts + '.png';
+      a.click();
+      showToast('Signature saved as PNG.');
+    });
   </script>
 </body>
 </html>
