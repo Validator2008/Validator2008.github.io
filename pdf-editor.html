@@ -409,56 +409,10 @@
       overflow: hidden;
       cursor: text;
       line-height: 1.2;
-      white-space: pre-wrap;
-      overflow: visible;
-      pointer-events: all;
-    }
-
-    /* Links inside the editor */
-    .text-input-overlay a {
-      color: #1a73e8 !important;
-      text-decoration: underline !important;
-      cursor: text;
-    }
-
-    /* Link URL popup */
-    .link-popup {
-      position: absolute;
-      background: #ffffff;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      padding: 6px 8px;
       display: flex;
       align-items: center;
-      gap: 5px;
-      z-index: 20;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
       pointer-events: all;
     }
-    .link-popup input[type="url"] {
-      background: #f5f5f5;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      color: #000;
-      padding: 3px 7px;
-      font-size: 12px;
-      outline: none;
-      width: 190px;
-    }
-    .link-popup input[type="url"]:focus { border-color: #1a73e8; }
-    .link-popup .lp-btn {
-      background: none;
-      border: none;
-      color: #1a73e8;
-      cursor: pointer;
-      font-size: 12px;
-      padding: 2px 7px;
-      border-radius: 4px;
-      white-space: nowrap;
-    }
-    .link-popup .lp-btn:hover { background: rgba(26,115,232,0.08); }
-    .link-popup .lp-btn.remove { color: #c0392b; }
-    .link-popup .lp-btn.remove:hover { background: rgba(192,57,43,0.08); }
 
     /* Redaction mark */
     .redact-mark {
@@ -915,7 +869,7 @@
 // GLOBALS FROM UMD BUNDLES
 // ============================================================
 const pdfjsLib = window.pdfjsLib;
-const { PDFDocument, StandardFonts, rgb, degrees, PageSizes, PDFName, PDFString } = PDFLib;
+const { PDFDocument, StandardFonts, rgb, degrees, PageSizes } = PDFLib;
 
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
@@ -1484,24 +1438,17 @@ function handleTextSpanClick(pageNum, span) {
 // RICH-TEXT EDITOR HELPERS
 // ============================================================
 
-// Walk a contentEditable div and extract styled text runs (with \n for line breaks, href for links)
+// Walk a contentEditable div and extract styled text runs
 function extractRuns(el) {
   const runs = [];
-  function walk(node, bold, italic, underline, href, isRoot) {
+  function walk(node, bold, italic, underline) {
     if (node.nodeType === Node.TEXT_NODE) {
-      if (node.textContent) runs.push({ text: node.textContent, bold, italic, underline, href: href || '' });
+      if (node.textContent) runs.push({ text: node.textContent, bold, italic, underline });
       return;
     }
     if (node.nodeType !== Node.ELEMENT_NODE) return;
     const tag = node.tagName.toLowerCase();
-    if (tag === 'br') {
-      runs.push({ text: '\n', bold, italic, underline, href: '' });
-      return;
-    }
-    // Block elements inserted by contentEditable for new lines (not the root div itself)
-    if (!isRoot && (tag === 'div' || tag === 'p')) {
-      runs.push({ text: '\n', bold, italic, underline, href: '' });
-    }
+    if (tag === 'br') return; // ignore br in single-line editors
     const st = node.style || {};
     const b = bold      || tag === 'b' || tag === 'strong'
               || st.fontWeight === 'bold' || st.fontWeight === '700';
@@ -1509,28 +1456,21 @@ function extractRuns(el) {
               || st.fontStyle === 'italic';
     const u = underline || tag === 'u'
               || (st.textDecoration || '').includes('underline');
-    const h = tag === 'a' ? (node.getAttribute('href') || href) : href;
-    node.childNodes.forEach(child => walk(child, b, i, u, h, false));
+    node.childNodes.forEach(child => walk(child, b, i, u));
   }
-  walk(el, false, false, false, '', true);
+  walk(el, false, false, false);
   return runs.filter(r => r.text);
 }
 
-// Restore runs as HTML into an empty contentEditable div (handles \n as <br>, href as <a>)
+// Restore runs as HTML into an empty contentEditable div
 function populateEditorFromRuns(el, runs) {
   el.innerHTML = '';
   runs.forEach(run => {
-    const parts = run.text.split('\n');
-    parts.forEach((part, idx) => {
-      if (idx > 0) el.appendChild(document.createElement('br'));
-      if (!part) return;
-      let node = document.createTextNode(part);
-      if (run.underline) { const u = document.createElement('u'); u.appendChild(node); node = u; }
-      if (run.italic)    { const em = document.createElement('em'); em.appendChild(node); node = em; }
-      if (run.bold)      { const b  = document.createElement('b');  b.appendChild(node);  node = b; }
-      if (run.href)      { const a  = document.createElement('a');  a.href = run.href; a.appendChild(node); node = a; }
-      el.appendChild(node);
-    });
+    let node = document.createTextNode(run.text);
+    if (run.underline) { const u = document.createElement('u'); u.appendChild(node); node = u; }
+    if (run.italic)    { const em = document.createElement('em'); em.appendChild(node); node = em; }
+    if (run.bold)      { const b  = document.createElement('b');  b.appendChild(node);  node = b; }
+    el.appendChild(node);
   });
 }
 
@@ -1552,7 +1492,7 @@ function makeEditorDiv(cx, cy, w, h, fontSize, baseFontCss, color) {
   div.style.left       = cx + 'px';
   div.style.top        = cy + 'px';
   div.style.width      = Math.max(w, 100) + 'px';
-  div.style.minHeight  = Math.max(h, fontSize + 4) + 'px';
+  div.style.height     = Math.max(h, fontSize + 4) + 'px';
   div.style.fontSize   = fontSize + 'px';
   div.style.fontFamily = baseFontCss.family;
   div.style.color      = color || '#000000';
@@ -1586,7 +1526,7 @@ function showSpanEditor(pageNum, cx, cy, cw, ch, originalText, pdfX, pdfY, pdfW,
     const runs = extractRuns(input);
     const newText = runs.map(r => r.text).join('');
     cleanup();
-    const hasFormatting = runs.some(r => r.bold || r.italic || r.underline || r.href);
+    const hasFormatting = runs.some(r => r.bold || r.italic || r.underline);
     if (!newText.trim()) return;
     if (newText === originalText && !hasFormatting) return;
 
@@ -1615,121 +1555,9 @@ function showSpanEditor(pageNum, cx, cy, cw, ch, originalText, pdfX, pdfY, pdfW,
 
   input.addEventListener('keydown', e => {
     if (e.key === 'Escape') { committed = true; cleanup(); return; }
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); commit(); return; }
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      document.execCommand('insertLineBreak');
-    }
+    if (e.key === 'Enter')  { e.preventDefault(); commit(); }
   });
   input.addEventListener('blur', () => setTimeout(commit, 120));
-}
-
-// ============================================================
-// LINK HELPERS
-// ============================================================
-
-function saveSelection(containerEl) {
-  const sel = window.getSelection();
-  if (!sel || !sel.rangeCount) return null;
-  const range = sel.getRangeAt(0);
-  if (!containerEl.contains(range.commonAncestorContainer)) return null;
-  return range.cloneRange();
-}
-
-function restoreSelection(range) {
-  if (!range) return;
-  const sel = window.getSelection();
-  sel.removeAllRanges();
-  sel.addRange(range);
-}
-
-function getAnchorInEditor(editorEl) {
-  const sel = window.getSelection();
-  if (!sel || !sel.rangeCount) return null;
-  let node = sel.getRangeAt(0).startContainer;
-  while (node && node !== editorEl) {
-    if (node.nodeType === Node.ELEMENT_NODE && node.tagName.toLowerCase() === 'a') return node;
-    node = node.parentNode;
-  }
-  return null;
-}
-
-function showLinkPopup(overlay, editorEl, bar) {
-  overlay.querySelectorAll('.link-popup').forEach(p => p.remove());
-
-  const anchor = getAnchorInEditor(editorEl);
-  const existingHref = anchor ? (anchor.getAttribute('href') || '') : '';
-  const savedRange = saveSelection(editorEl);
-
-  const popup = document.createElement('div');
-  popup.className = 'link-popup';
-
-  const urlInput = document.createElement('input');
-  urlInput.type = 'url';
-  urlInput.placeholder = 'https://...';
-  urlInput.value = existingHref;
-
-  const applyBtn = document.createElement('button');
-  applyBtn.className = 'lp-btn';
-  applyBtn.textContent = 'Apply';
-
-  const cancelBtn = document.createElement('button');
-  cancelBtn.className = 'lp-btn';
-  cancelBtn.textContent = '✕';
-
-  popup.appendChild(urlInput);
-  popup.appendChild(applyBtn);
-
-  if (anchor) {
-    const removeBtn = document.createElement('button');
-    removeBtn.className = 'lp-btn remove';
-    removeBtn.textContent = 'Remove';
-    removeBtn.addEventListener('click', () => {
-      popup.remove();
-      editorEl.focus();
-      const range = document.createRange();
-      range.selectNodeContents(anchor);
-      const sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-      document.execCommand('unlink');
-    });
-    popup.appendChild(removeBtn);
-  }
-
-  popup.appendChild(cancelBtn);
-
-  // Position: above the format bar, or below editor if near the top
-  const barTop = parseFloat(bar.style.top) || 0;
-  const popupTop = barTop > 52 ? barTop - 48 : parseFloat(editorEl.style.top) + (editorEl.offsetHeight || 30) + 6;
-  popup.style.left = bar.style.left;
-  popup.style.top  = popupTop + 'px';
-  overlay.appendChild(popup);
-  urlInput.focus();
-  urlInput.select();
-
-  function apply() {
-    const url = urlInput.value.trim();
-    popup.remove();
-    editorEl.focus();
-    if (!url) return;
-    // Defer until after focus settles so execCommand sees the editor as active
-    requestAnimationFrame(() => {
-      if (savedRange) {
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(savedRange);
-      }
-      document.execCommand('createLink', false, url);
-    });
-  }
-
-  applyBtn.addEventListener('click', apply);
-  cancelBtn.addEventListener('click', () => { popup.remove(); editorEl.focus(); });
-  urlInput.addEventListener('keydown', e => {
-    if (e.key === 'Enter')  { e.preventDefault(); apply(); }
-    if (e.key === 'Escape') { popup.remove(); editorEl.focus(); }
-  });
 }
 
 // ============================================================
@@ -1744,14 +1572,12 @@ function showFormatBar(overlay, editorEl) {
   bar.style.top  = Math.max(2, inputTop - 36) + 'px';
 
   const defs = [
-    { cmd: 'bold',      label: 'B',    title: 'Bold',          css: 'font-weight:700' },
-    { cmd: 'italic',    label: 'I',    title: 'Italic',        css: 'font-style:italic' },
-    { cmd: 'underline', label: 'U̲',    title: 'Underline' },
+    { cmd: 'bold',      label: 'B',  title: 'Bold',          css: 'font-weight:700' },
+    { cmd: 'italic',    label: 'I',  title: 'Italic',        css: 'font-style:italic' },
+    { cmd: 'underline', label: 'U̲',  title: 'Underline' },
     { sep: true },
-    { action: 'bullet', label: '•',    title: 'Bullet point' },
-    { action: 'number', label: '1.',   title: 'Numbered item' },
-    { sep: true },
-    { action: 'link',   label: 'Link', title: 'Insert / edit hyperlink' },
+    { action: 'bullet', label: '•',  title: 'Bullet point' },
+    { action: 'number', label: '1.', title: 'Numbered item' },
   ];
 
   function refreshBtnStates() {
@@ -1788,8 +1614,6 @@ function showFormatBar(overlay, editorEl) {
         togglePrefixInEditor(editorEl, '• ');
       } else if (def.action === 'number') {
         togglePrefixInEditor(editorEl, '1. ');
-      } else if (def.action === 'link') {
-        showLinkPopup(overlay, editorEl, bar);
       }
     });
 
@@ -1882,11 +1706,7 @@ function openOverlayEditor(pageNum, ov, el) {
 
   input.addEventListener('keydown', e => {
     if (e.key === 'Escape') { committed = true; cleanup(); return; }
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); commit(); return; }
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      document.execCommand('insertLineBreak');
-    }
+    if (e.key === 'Enter')  { e.preventDefault(); commit(); }
   });
   input.addEventListener('blur', () => setTimeout(commit, 120));
 }
@@ -1991,25 +1811,13 @@ function renderPageOverlays(pageNum) {
     if (ov.runs && ov.runs.length > 0) {
       const base = FONT_TO_BASE[ov.font] || ov.font || 'Helvetica';
       ov.runs.forEach(run => {
-        const parts = run.text.split('\n');
+        const span = document.createElement('span');
+        span.textContent = run.text;
         const rc = STD_FONT_CSS[resolveFont(base, run.bold, run.italic)] || {};
-        parts.forEach((part, idx) => {
-          if (idx > 0) el.appendChild(document.createElement('br'));
-          if (!part) return;
-          const node = run.href ? document.createElement('a') : document.createElement('span');
-          if (run.href) {
-            node.href = run.href;
-            node.target = '_blank';
-            node.rel = 'noopener noreferrer';
-            node.style.color = '#1a73e8';
-            node.style.textDecoration = 'underline';
-          }
-          node.textContent = part;
-          node.style.fontWeight     = rc.weight || '';
-          node.style.fontStyle      = rc.style  || '';
-          if (!run.href) node.style.textDecoration = run.underline ? 'underline' : '';
-          el.appendChild(node);
-        });
+        span.style.fontWeight     = rc.weight || '';
+        span.style.fontStyle      = rc.style  || '';
+        span.style.textDecoration = run.underline ? 'underline' : '';
+        el.appendChild(span);
       });
     } else {
       el.textContent = ov.text;
@@ -2782,14 +2590,12 @@ async function buildOutputPDF() {
     }
   }
 
-  // Collect link annotations to apply AFTER form.flatten() (flatten can rebuild Annots arrays)
-  const pendingLinks = []; // { page, rect, href }
-
   // Apply text overlays
   for (const [pgStr, overlays] of Object.entries(state.textOverlays)) {
     const pageIndex = parseInt(pgStr) - 1;
     if (pageIndex < 0 || pageIndex >= pages.length) continue;
     const page = pages[pageIndex];
+    const { height: pH } = page.getSize();
 
     for (const ov of overlays) {
       try {
@@ -2797,41 +2603,20 @@ async function buildOutputPDF() {
         const base = FONT_TO_BASE[ov.font] || ov.font || 'Helvetica';
 
         if (ov.runs && ov.runs.length > 0) {
-          // Split runs into lines by '\n', then draw each line
-          const lines = [[]];
+          // Draw each styled run side-by-side
+          let x = ov.pdfX;
           for (const run of ov.runs) {
-            const parts = run.text.split('\n');
-            parts.forEach((part, idx) => {
-              if (idx > 0) lines.push([]);
-              if (part) lines[lines.length - 1].push({ ...run, text: part });
-            });
-          }
-          const lineHeight = ov.size * 1.2;
-          for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
-            let x = ov.pdfX;
-            const y = ov.pdfY - lineIdx * lineHeight;
-            for (const run of lines[lineIdx]) {
-              if (!run.text) continue;
-              const f = await getFont(resolveFont(base, run.bold, run.italic));
-              const runColor = run.href ? rgb(0.10, 0.45, 0.91) : textColor;
-              page.drawText(run.text, { x, y, size: ov.size, font: f, color: runColor });
-              const w = f.widthOfTextAtSize(run.text, ov.size);
-              if (run.underline || run.href) {
-                page.drawLine({
-                  start: { x, y: y - 1.5 }, end: { x: x + w, y: y - 1.5 },
-                  thickness: Math.max(0.5, ov.size * 0.05), color: runColor,
-                });
-              }
-              // Defer link annotation creation until after form.flatten()
-              if (run.href) {
-                pendingLinks.push({
-                  page,
-                  rect: [x, y - ov.size * 0.2, x + w, y + ov.size * 0.75],
-                  href: run.href,
-                });
-              }
-              x += w;
+            if (!run.text) continue;
+            const f = await getFont(resolveFont(base, run.bold, run.italic));
+            page.drawText(run.text, { x, y: ov.pdfY, size: ov.size, font: f, color: textColor });
+            const w = f.widthOfTextAtSize(run.text, ov.size);
+            if (run.underline) {
+              page.drawLine({
+                start: { x, y: ov.pdfY - 1.5 }, end: { x: x + w, y: ov.pdfY - 1.5 },
+                thickness: Math.max(0.5, ov.size * 0.05), color: textColor,
+              });
             }
+            x += w;
           }
         } else {
           // Legacy single-style overlay
@@ -2852,7 +2637,7 @@ async function buildOutputPDF() {
     }
   }
 
-  // Apply form values (flatten may rebuild Annots arrays, so links must come after)
+  // Apply form values
   if (state.formFields.length) {
     try {
       const form = outputDoc.getForm();
@@ -2873,36 +2658,6 @@ async function buildOutputPDF() {
       }
       try { form.flatten(); } catch (_) {}
     } catch (_) {}
-  }
-
-  // Add link annotations last — after any form flatten that may have modified Annots arrays
-  const ctx = outputDoc.context;
-  const PDFNameCls   = PDFLib.PDFName;
-  const PDFStringCls = PDFLib.PDFString;
-  const PDFArrayCls  = PDFLib.PDFArray;
-  for (const { page, rect, href } of pendingLinks) {
-    try {
-      const linkRef = ctx.register(ctx.obj({
-        Type: 'Annot',
-        Subtype: 'Link',
-        Rect: rect,
-        Border: [0, 0, 0],
-        A: { Type: 'Action', S: 'URI', URI: PDFStringCls.of(href) },
-      }));
-      const annotsKey = PDFNameCls.of('Annots');
-      // lookupMaybe handles both direct PDFArray and indirect PDFRef → PDFArray
-      const annotsArr = PDFArrayCls
-        ? page.node.lookupMaybe(annotsKey, PDFArrayCls)
-        : null;
-      if (annotsArr) {
-        annotsArr.push(linkRef);
-      } else {
-        // No existing Annots array (or can't look it up) — create one
-        page.node.set(annotsKey, ctx.obj([linkRef]));
-      }
-    } catch (e) {
-      console.warn('Link annotation failed:', e);
-    }
   }
 
   return await outputDoc.save();
